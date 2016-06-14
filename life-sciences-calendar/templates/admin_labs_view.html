@@ -1,0 +1,104 @@
+{% include '/templates/header.html' %}
+
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  {% if lab %}
+    <table class="table table-hover">
+      <tr>
+        <th>Laboratory</th>
+        <td>{{lab.name}}</th>
+        <td></td>
+      </tr>
+      {% if edit_owners %}
+      <tr>
+        <form class="form-group" action="/admin/equipment/labs/{{lab.idstring}}/edit_owners" method="post">
+          <tr>
+            <th width="20%">Lab Owner(s)</th>
+            <td width="60%">
+              {{ controls.edit_list("edit_owners", lab.owners, "owner", "Add an email address...") }}
+           </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Lab Owner(s)</th>
+        <td width="60%">
+          {{ controls.view_list(lab.owners) }}
+        </td>
+        <td width="20%">
+          <a href="/admin/equipment/labs/{{lab.idstring}}/edit_owners">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+      {% if edit_location %}
+      <tr>
+        <form class="form-group" action="/admin/equipment/labs/{{lab.idstring}}/edit_location" method="post">
+          <tr>
+            <th width="20%">Location</th>
+            <td width="60%">
+              {{ controls.edit_location(lab.location, "location") }}
+            </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Location</th>
+        <td width="60%">
+          {{ controls.view_location(lab.location) }}
+        </td>
+        <td width="20%">
+          <a href="/admin/equipment/labs/{{lab.idstring}}/edit_location">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+      {% if edit_info %}
+      <tr>
+        <form class="form-group" action="/admin/equipment/labs/{{lab.idstring}}/edit_info" method="post">
+          <tr>
+            <th width="20%">Information</th>
+            <td width="60%">
+              {{ controls.edit_dictionary("edit_info", lab.information_keys, lab.information, "information") }}
+            </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Information</th>
+        <td width="60%"> {{controls.view_dictionary(lab.information_keys, lab.information)}}</td>
+        <td width="20%">
+          <a href="/admin/equipment/labs/{{lab.idstring}}/edit_info">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+    </table>
+
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

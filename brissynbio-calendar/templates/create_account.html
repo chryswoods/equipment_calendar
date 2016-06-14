@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{title}}</title>
+    <link rel="icon" type="image/png" href="/images/bsb_icon.png" />
+
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap-united.min.css" rel="stylesheet" media="screen">
+    <link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+
+    <!-- BrisSynBio customisation -->
+    <link href="/css/brissynbio.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    {% if under_maintenance %}
+      <div class="alert alert-info" role="alert">
+        Site is in maintenance mode
+      </div>
+    {% endif %}
+
+    {% if errors %}
+      <!-- Write any errors to the top of the page -->
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" 
+                  aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {% for error in errors %}
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            {{ error }}<br/>
+          {% endfor %}
+      </div>
+    {% elif messages %}
+      <!-- Write any messages to the top of the page -->
+      <div class="alert alert-info alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" 
+                  aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {% for message in messages %}
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            {{message}}<br/>
+          {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="alert alert-info alert-dismissible" role="alert">
+       <button type="button" class="close" data-dismiss="alert" 
+               aria-label="Close"><span aria-hidden="true">&times;</span></button>
+       <h2>Welcome to the BrisSynBio equipment management system.</h2> 
+       <h4>You are about to create a BrisSynBio equipment account using the 
+       email address <strong>{{email}}</strong>.</h4>
+       <h4>If you want to create an account for
+       a different email address, then please <a href="{{relogin_url}}">click here</a>.</h4>
+    </div>
+
+    <div class="panel panel-default" > 
+      <div class="panel-heading container-fluid">
+        <div class="panel-title row">
+           <div class="col-xs-12">                
+             <h3>Please tell us some things about yourself...</h3>
+           </div>
+        </div>
+      </div>
+
+      <div class="panel-body container-fluid">
+        <form class="form-inline" action="/create_account" method="post">
+          <div class="row">
+            <label class="col-md-2 col-sm-3 col-xs-4" for="name"
+                   data-toggle="popover" data-trigger="click hover"
+                   data-content="This should be your full name. It will be used by the equipment owners
+                                 to recognise who you are, so please use your real name."
+            ><strong>Your full name [?]</strong></label>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              <input style="width:100%" class="form-control" type="text"
+                     id="name" name="name" placeholder="Please type your full name here..."
+                     {% if name %}
+                       value="{{name}}"
+                     {% endif %}
+              />
+            </div>
+          </div>
+
+          <hr/>
+
+          <div class="row">
+            <label class="col-md-2 col-sm-3 col-xs-4" for="initials"
+                   data-toggle="popover" data-trigger="click hover"
+                   data-content="These should be your initials (2 or 3 letters). These will be used
+                                 to identify your samples, so they have to be unique. If someone has
+                                 already registered an account with your initials then you will have to
+                                 choose something else."
+            ><strong>Your initials [?]</strong></label>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              <input style="width:100%" class="form-control" type="text"
+                     id="initials" name="initials" placeholder="Please type your initials (2 or 3 characters) here..."
+                     {% if initials %}
+                       value="{{initials}}"
+                     {% endif %}
+              />
+            </div>
+          </div>
+
+          <hr/>
+
+          <div class="row">
+            <label class="col-md-2 col-sm-3 col-xs-4" for="chosen_project"
+                   data-toggle="popover" data-trigger="click hover"
+                   data-content="This should be the research project under which you will conduct the majority
+                                 of your work. When you book a piece of equipment, by default, the booking will
+                                 be assigned to this research project. You will always have the chance to assign
+                                 the booking to another project, and can change your default project at any time,
+                                 so just select 'Other...' if you don't know your project now."
+            ><strong>Your project [?]</strong></label>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              <select class="form-control" style="width:100%" name="chosen_project" id="chosen_project">
+                {% if chosen_project %}
+                    <option value="{{chosen_project.id}}" selected="true">{{chosen_project.title}}</option>
+                    <option value="None" disabled="true">--------</option>
+                {% else %}
+                    <option value="None">Choose a project...</option>
+                {% endif %}
+                {% if projects %}
+                  {% for project in projects %}
+                    <option value="{{project.id}}">{{project.title}}</option>
+                  {% endfor %}
+                {% endif %}
+              </select>
+            </div>        
+          </div>
+
+          <hr/>
+
+          <div class="row">
+            <label class="col-xs-12" for="intro_text"
+                   data-toggle="popover" data-trigger="click hover" data-placement="top"
+                   data-content="This should be a short paragraph tell us who you are, who you work for,
+                                 and where you are based. This will help us to decide whether or not to 
+                                 approve your account on this booking system, and will also give extra information
+                                 to the equipment owners when you request access to their equipment. If you have
+                                 a UoB email address, but have chosen to create an account using another email
+                                 address (e.g. a gmail address), then please could you give us your UoB
+                                 email address here."
+            >
+              Finally, use the box below to give us some more information about yourself. What is your
+              position (postdoc, PI etc.?), which group you work for, which lab you are based in, and
+              your UoB email address if you have one and are not using it to register for this account. [?]
+            </label>
+          </div>
+
+          <div class="row">
+            <div class="col-xs-12">
+              {% if intro_text %}
+               <textarea style="width:100%" cols="80" rows="4" id="intro_text" name="intro_text">{{ intro_text }}</textarea>
+              {% else %}
+                <textarea style="width:100%" cols="80" rows="4" id="intro_text" name="intro_text"></textarea>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-xs-12">
+              <button style="width:100%" type="submit" class="btn btn-success"><strong>Create Account</strong></button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="/js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script type="text/javascript" src="/js/ie10-viewport-bug-workaround.js"></script>
+ 
+    <script type="text/javascript">
+
+      {% if datetime_pickers %}
+        {{ datetime_pickers.javaScript() }}
+      {% endif %}
+
+      function goBack() {
+         window.history.back();
+      }
+      function goForward() {
+         window.history.forward();
+      }
+
+      function toggle(source, name) {
+        checkboxes = document.getElementsByName(name);
+        for(var i=0, n=checkboxes.length;i<n;i++) {
+          checkboxes[i].checked = source.checked;
+        }
+      }
+
+      {% if enable_popovers %}
+        $("[data-toggle='popover']").popover();
+      {% endif %}
+
+    </script>            
+
+  </body>
+</html>
+

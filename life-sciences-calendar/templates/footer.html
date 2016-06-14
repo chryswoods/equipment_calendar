@@ -1,0 +1,55 @@
+          {% if second_menu_links %}
+            </div> </div>
+          {% endif %}
+
+          </div> <!-- panel-body -->
+        </div> <!-- panel -->
+      </div> <!-- container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="/js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script type="text/javascript" src="/js/ie10-viewport-bug-workaround.js"></script>
+ 
+    <script type="text/javascript">
+
+      {% if datetime_pickers %}
+        {{ datetime_pickers.javaScript() }}
+      {% endif %}
+
+      function goBack() {
+         window.history.back();
+      }
+      function goForward() {
+         window.history.forward();
+      }
+
+      function toggle(source, name) {
+        checkboxes = document.getElementsByName(name);
+        for(var i=0, n=checkboxes.length;i<n;i++) {
+          checkboxes[i].checked = source.checked;
+        }
+      }
+
+      {% if enable_popovers %}
+        $("[data-toggle='popover']").popover();
+      {% endif %}
+
+    </script>            
+
+  </body>
+  <tail>
+    <p align="center">
+      <small>
+        <a href="http://bristol.ac.uk/lifesciences">Life Sciences</a> |
+        {% if admin_email %}
+          <a href="/feedback/report_problem">Report a problem</a>
+        {% endif %}
+      </small>
+    </p>
+  </tail>
+</html>

@@ -1,0 +1,43 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  {% for keyvalue in equip|dictsort %}
+    {% if sort_by_type %}
+      <h3><a href="/equipment/types/{{keyvalue[0]}}">{{type_mapping[keyvalue[0]]}}</a></h3>
+    {% else %}
+      <h3><a href="/equipment/labs/{{keyvalue[0]}}">{{lab_mapping[keyvalue[0]]}}</a></h3>
+    {% endif %}
+
+    <table class="table table-striped table-hover">
+      <tr>
+        {% for item in keyvalue[1] %}
+
+          {% if item.idstring in equipment["administered"] %}
+            <td align="center" class="info" width="25%">
+          {% elif item.idstring in equipment["authorised"] %}
+            <td align="center" class="success" width="25%">
+          {% elif item.idstring in equipment["pending"] %}
+            <td align="center" class="warning" width="25%">
+          {% elif item.idstring in equipment["banned"] %}
+            <td align="center" class="danger" width="25%">
+          {% else %}
+            <td align="center" width="25%">
+          {% endif %}
+            <a href="/equipment/item/{{item.idstring}}">{{item.name}}</a></td>
+
+          {% if loop.index is divisibleby(4) and not loop.last %}
+            </tr><tr>
+          {% endif %}
+
+        {% endfor %}
+      </tr>
+    </table>
+
+    {% if not loop.last %}
+      <hr/>
+    {% endif %}
+
+  {% endfor %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

@@ -1,0 +1,207 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+    <div class="panel panel-default">
+      <div class="panel-heading container-fluid">
+        <div class="panel-title row" onclick="window.document.location='/account';">
+          <h3 class="col-sm-12 col-xs-12">{{account.name}} ({{account.email}})</h3>
+        </div>
+      </div>
+
+      <div class="panel-body container-fluid">
+        <div class="row">
+          {% if edit_username %}
+            <form class="form-inline" action="/account/edit/username" method="post">
+              <div class="col-md-2 col-sm-3 col-xs-4"><label for="username"><strong>Username</strong></label></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <input type="text" class="form-control" id="username"
+                        name="username" placeholder="{{account.name}}"
+                        required="true">
+                </input> 
+                <button type="submit" class="btn btn-default">Update</button>
+              </div>
+            </form>
+          {% else %}
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Username</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8" onclick="window.document.location='/account/edit/username';">
+              {{account.name}}
+              <a href="/account/edit/username">
+                <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                  Edit
+                </button>
+              </a>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="row">
+          <div class="col-md-2 col-sm-3 col-xs-4"><strong>Initials</strong></div>
+          <div class="col-md-10 col-sm-9 col-xs-8" onclick="window.document.location='/account';">{{account.initials}}</div>
+        </div>
+
+        <div class="row">
+          {% if edit_pin %}
+            <form class="form-inline" action="/account/edit/pin" method="post">
+              <div class="col-md-2 col-sm-3 col-xs-4"><label for="username"><strong>PIN number</strong></label></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <input type="text" class="form-control" id="pin_number"
+                        name="pin_number" placeholder="****" size="4" maxlength="4"
+                        value="{{account.pin_number}}"
+                        required="true">
+                </input> 
+                <button type="submit" class="btn btn-default">Update</button>
+              </div>
+            </form>
+          {% else %}
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>PIN number</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8" onclick="window.document.location='/account/edit/pin';">
+              ****
+              <a href="/account/edit/pin">
+                <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                  Edit
+                </button>
+              </a>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="row">
+          {% if edit_project %}
+            <form class="form-inline" action="/account/edit/project" method="post">
+              <div class="col-md-2 col-sm-3 col-xs-4"><label for="chosen_project"><strong>Default Project</strong></label></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <select class="form-control" name="chosen_project" id="chosen_project">
+                  {% if chosen_project %}
+                    <option value="{{chosen_project.id}}" selected="true">{{chosen_project.title}}</option>
+                    <option value="None" disabled="true">--------</option>
+                  {% else %}
+                    <option value="None">Choose a project...</option>
+                  {% endif %}
+                  {% if projects %}
+                    {% for project in projects %}
+                      <option value="{{project.id}}">{{project.title}}</option>
+                    {% endfor %}
+                  {% endif %}
+                </select>
+                <button type="submit" class="btn btn-default">Update</button>
+              </div>
+            </form>
+          {% else %}
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Default Project</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8" onclick="window.document.location='/account/edit/project';">
+              {% if chosen_project %}
+                {{chosen_project.title}}
+              {% else %}
+                {{account.default_project}}
+              {% endif %}
+              <a href="/account/edit/project">
+                <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                  Edit
+                </button>
+              </a>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="row">
+          <div class="col-md-2 col-sm-3 col-xs-4"><strong>Status</strong></div>
+          <div class="col-md-10 col-sm-9 col-xs-8" onclick="window.document.location='/account';">
+            {% if account.is_admin %}
+            Administrator
+            {% elif account.is_approved %}
+            User
+            {% else %}
+            Unapproved
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12"><hr/></div>
+        </div>
+
+        {% if administered_equipment %}
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Administered Equipment</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              {% for item in administered_equipment %}
+                <a href="/equipment/item/{{item}}/admin">{{equipment_mapping[item]}}</a>
+                  {% if not loop.last %}
+                    ,&nbsp
+                  {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+       {% endif %}
+
+        {% if authorised_equipment %}
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Authorised Equipment</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              {% for item in authorised_equipment %}
+                <a href="/equipment/item/{{item}}/admin">{{equipment_mapping[item]}}</a>
+                  {% if not loop.last %}
+                    ,&nbsp
+                  {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if pending_equipment %}
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Pending Equipment</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              {% for item in pending_equipment %}
+                <a href="/equipment/item/{{item}}/admin">{{equipment_mapping[item]}}</a>
+                  {% if not loop.last %}
+                    ,&nbsp
+                  {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if banned_equipment %}
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Banned Equipment</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              {% for item in banned_equipment %}
+                <a href="/equipment/item/{{item}}/admin">{{equipment_mapping[item]}}</a>
+                  {% if not loop.last %}
+                    ,&nbsp
+                  {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if account.information %}
+          <div class="row">
+            <div class="col-xs-12"><hr/></div>
+          </div>    
+
+          {% for info in account.information|dictsort %}
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4"><strong>{{info[0]}}</strong></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">{{info[1]}}</div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="row">
+          <div class="col-xs-12"><hr/></div>
+        </div>    
+
+        <div class="row" onclick="window.document.location='/delete_account';">
+          <div class="col-xs-12">
+            Please <a href="/delete_account">click here</a> if you no longer 
+            want access to this site and want to delete your account.
+          </div>
+        </div>    
+
+      </div> <!-- panel-body -->
+    </div>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

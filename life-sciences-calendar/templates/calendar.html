@@ -1,0 +1,11 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  <p>Calendar page</p>
+
+  {% if Auth_URI %}
+    <p>Authorize URI: <a href="{{Auth_URI}}">Click Here</a></p>
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

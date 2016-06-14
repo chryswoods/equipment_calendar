@@ -1,0 +1,14 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  <div class="alert alert-danger" role="alert">
+    <p>
+      Your account has insufficient permission to view this page.
+    <p>
+    <p>
+      This page is only available for administrators of this site.
+    </p>
+  </div>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

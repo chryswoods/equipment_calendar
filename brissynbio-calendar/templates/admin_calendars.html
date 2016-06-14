@@ -1,0 +1,56 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr class="info">
+        <th>Calendar</th>
+        <th>Google Calendar ID</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for calendar in calendars %}
+         <tr onclick="window.document.location='/admin/calendars/{{calendar.idstring}}';">
+           <td>{{calendar.name}}</td>
+           <td>
+             {% if calendar.gcal_id %}
+               <a href="{{urls[loop.index0]}}">{{calendar.gcal_id}}</a>
+             {% else %}
+               <p>Not connected</p>
+             {% endif %}
+           </td>
+           <td>
+            {% if really_delete == calendar.idstring %}
+              <a href="/admin/calendars/{{calendar.idstring}}/really_delete">
+                <button type="button" class="btn btn-danger">DELETE</button>
+              </a>
+            {% else %}
+              <a href="/admin/calendars/{{calendar.idstring}}/delete">
+                <button type="button" class="btn btn-warning">Delete</button>
+              </a>
+            {% endif %}
+          </td>   
+         </tr>
+      {% endfor %}
+      <form class="form-group" action="/admin/calendars" method="post">
+        <tr>
+          <td>
+            <input type="text" class="form-control" id="calendar_name" 
+                   name="type_name" placeholder="Enter a name for this calendar..."
+                   required="true" size="40">
+            </input>
+          </td>
+          <td></td>
+          <td>
+            <button type="submit" class="btn btn-default">Add</button>          
+          </td>
+        </tr>
+      </form>
+    </tbody>
+  </table>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

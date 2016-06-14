@@ -1,0 +1,101 @@
+{% include '/templates/header.html' %}
+{% autoescape false %}
+{% import '/templates/controls.html' as controls %}
+
+  <h3><a href="/equipment/labs/{{item.laboratory}}">{{laboratory_mapping[item.laboratory]}}</a> 
+      | <a href="/equipment/types/{{item.equipment_type}}">{{type_mapping[item.equipment_type]}}</a> | 
+        <a href="/equipment/item/{{item.idstring}}">{{item.name}}</a> has been reserved...</h3>
+
+
+  <p>Please fill in the following information to confirm your booking. Your reservation
+     will be held for at least ten minutes to allow you to complete this information.</p>
+
+  {% if reservation %}
+    <p>If you have decided that you no longer need this booking, then please
+       <a href="/equipment/item/{{equipment.idstring}}/cancel?reservation={{reservation.booking_id}}">click here</a>
+       to cancel your reservation.</p>
+  {% else %}
+    <p>If you have decided that you no longer need this booking, then please
+       click here [DEMO] to cancel your reservation.</p>
+  {% endif %}
+
+  {% if requirements %}
+    {% if requirements.intro %}
+      <p>{{ requirements.intro.replace("\n","</p><p>") }}</p>
+    {% endif %}
+  {% endif %}
+
+  <div class="panel panel-success">
+    <div class="panel-body container-fluid">
+
+      <form class="form-horizontal" action="/equipment/item/{{equipment.idstring}}/book" method="post">
+        <div class="form-group">
+          <label class="col-md-2 col-sm-3 col-xs-4 control-label"
+                 data-toggle="popover" data-trigger="click hover"
+                 data-content="All equipment use must be assigned to a specific project. Please choose the project for which this particular use of the equipment will be assigned.">Project [?]</label>
+          <div class="col-md-10 col-sm-9 col-xs-8">
+            {% if project %}
+              {{ controls.combo_list(projects, "project", 
+                         (project_mapping[project],account.default_project), "form-control") }}
+            {% elif account.default_project %}
+              {{ controls.combo_list(projects, "project", 
+                         (project_mapping[account.default_project],account.default_project), "form-control") }}
+            {% else %}
+              {{ controls.combo_list(projects, "project", None, "form-control") }}
+            {% endif %}
+          </div>
+        </div>
+
+        {% if requirements %}
+          {% for requirement in requirements.requirements %}
+            <div class="form-group">
+              {% if requirement.reqhelp %}
+                <label class="col-md-2 col-sm-3 col-xs-4 control-label"
+                       data-toggle="popover" data-trigger="click hover"
+                       data-content="{{requirement.reqhelp}}">{{requirement.reqname}} [?]</label>
+              {% else %}
+                <label class="col-md-2 col-sm-3 col-xs-4 control-label">{{requirement.reqid}}</label>
+              {% endif %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% if requirement.hasDiscreteValues() %}
+                  {% if supplied and supplied[requirement.reqid] %}
+                    {{controls.combo_list(requirement.discreteValues(), requirement.reqid,
+                                          (supplied[requirement.reqid],supplied[requirement.reqid]), "form-control") }}
+                  {% else %}
+                    {{controls.combo_list(requirement.discreteValues(), requirement.reqid,
+                                          None, "form-control") }}
+                  {% endif %}
+                {% else %}
+                  {% if supplied and supplied[requirement.reqid] %}
+                    <input class="form-control" type="text" id='{{requirement.reqid}}' name='{{requirement.reqid}}'
+                           value="{{supplied[requirement.reqid]}}"
+                           placeholder="{{requirement.getValueHelpString()}}" required/>
+                  {% else %}
+                    <input class="form-control" type="text" id='{{requirement.reqid}}' name='{{requirement.reqid}}'
+                           placeholder="{{requirement.getValueHelpString()}}" required/>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="form-group">
+          <input type="hidden" id="booking_user" name="booking_user" value="{{email}}"/>
+          {% if reservation %}
+            <input type="hidden" id="reservation" name="reservation" value="{{reservation.booking_id}}"/>
+            <input type="hidden" id="booking_action" name="booking_action" value="confirm_booking"/>
+          {% else %}
+            <input type="hidden" id="booking_action" name="booking_action" value="demo_confirm"/>
+          {% endif %}
+
+          <div class="col-md-offset-2 col-md-10 col-sm-offset-3 col-sm-9 col-xs-offset-4 col-xs-8">
+            <button type="submit" class="btn btn-default">Confirm Booking</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+{% include '/templates/footer.html' %}
+{% endautoescape %}

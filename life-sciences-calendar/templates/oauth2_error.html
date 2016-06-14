@@ -1,0 +1,14 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  <div class="jumbotron">
+    <h1>Something went wrong with OAuth2 authentication!</h1>
+
+    {% if referring_page %}
+      <p><a href="{{referring_page}}">Click here</a> to go 
+         back to the last page.</p>
+    {% endif %}
+  </div>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

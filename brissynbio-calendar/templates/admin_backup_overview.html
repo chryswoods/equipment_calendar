@@ -1,0 +1,82 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr class="info">
+        <th>Database</th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for database in databases %}
+         <tr>
+           <td><a href="/admin/backup/view/{{database}}">{{database}}</a></td>
+           <td>
+             <form class="form-group" action="/admin/backup/backup/{{database}}" method="post">
+               <div class="input-group">
+                 <input type="text" class="form-control" id="filename"
+                        name="filename" value="backup_{{database}}.dat" required="true" size="40"></input>
+                 <span class="input-group-btn"><button type="submit" class="btn btn-default">Backup</button></span>
+               </div>
+             </form>
+           </td>
+           <td>
+             <form class="form-group" action="/admin/backup/restore/{{database}}" method="post" enctype="multipart/form-data">
+               <div class="input-group">
+                 <input type="file" name="filecontents" id="filecontents " required="true"></input>
+                 <span class="input-group-btn"><button type="submit" class="btn btn-default">Restore</button></span>
+               </div>
+             </form>
+           </td>
+          <td>
+            {% if really_delete == database %}
+              <a href="/admin/backup/delete/{{database}}/really_delete">
+                <button type="button" class="btn btn-danger">CLEAR</button>
+              </a>
+            {% else %}
+              <a href="/admin/backup/delete/{{database}}/delete">
+                <button type="button" class="btn btn-warning">Clear</button>
+              </a>
+            {% endif %}
+          </td>   
+         </tr>
+      {% endfor %}
+         <tr>
+           <td><b>Everything</b></td>
+           <td>
+             <form class="form-group" action="/admin/backup/backup/all" method="post">
+               <div class="input-group">
+                 <input type="text" class="form-control" id="filename"
+                        name="filename" value="backup_all.dat" required="true" size="40"></input>
+                 <span class="input-group-btn"><button type="submit" class="btn btn-default">Backup</button></span>
+               </div>
+             </form>
+           </td>
+           <td>
+             <form class="form-group" action="/admin/backup/restore/all" method="post" enctype="multipart/form-data">
+               <div class="input-group">
+                 <input type="file" name="filecontents" id="filecontents" required="true"></input>
+                 <span class="input-group-btn"><button type="submit" class="btn btn-default">Restore</button></span>
+               </div>
+             </form>
+           </td>
+          <td>
+            {% if really_delete == "all" %}
+              <a href="/admin/backup/delete/all/really_delete">
+                <button type="button" class="btn btn-danger">CLEAR</button>
+              </a>
+            {% else %}
+              <a href="/admin/backup/delete/all/delete">
+                <button type="button" class="btn btn-warning">Clear</button>
+              </a>
+            {% endif %}
+          </td>   
+         </tr>
+    </tbody>
+  </table>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

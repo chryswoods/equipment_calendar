@@ -1,0 +1,48 @@
+{% include '/templates/header.html' %}
+
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  {% if equipment_type %}
+    <table class="table table-hover">
+      <tr>
+        <th>Equipment Type</th>
+        <td>{{equipment_type.name}}</th>
+        <td></td>
+      </tr>
+      {% if edit_info %}
+      <tr>
+        <form class="form-group" action="/admin/equipment/types/{{equipment_type.idstring}}/edit_info" method="post">
+          <tr>
+            <th width="20%">Information</th>
+            <td width="60%">
+              {{ controls.edit_dictionary("edit_info", equipment_type.information_keys, 
+                                          equipment_type.information, "information") }}
+            </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Information</th>
+        <td width="60%"> {{controls.view_dictionary(equipment_type.information_keys, 
+                                                    equipment_type.information)}}</td>
+        <td width="20%">
+          <a href="/admin/equipment/types/{{equipment_type.idstring}}/edit_info">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+    </table>
+
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

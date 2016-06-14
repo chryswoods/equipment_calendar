@@ -1,0 +1,42 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  {% if management_tasks %}
+    {% for task in management_tasks %}
+      <a href="{{task[1]}}">
+        <div class="alert alert-info" role="alert">
+          {{task[0]}}
+        </div>
+      </a>
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-success" role="alert">
+      Everything appears to be ok.
+    </div>
+  {% endif %}
+
+  <p>Number of user accounts == {{number_of_accounts}}</p>
+  <p>Number of projects == {{number_of_projects}}</p>
+
+  <form class="form-group" action="/admin" method="post">
+    {% if under_maintenance %}
+      <input type="hidden" name="switch_maintenance" value="off"/>
+      <button type="submit" class="btn btn-default">Turn Off Maintenance Mode</button>
+    {% else %}
+      <input type="hidden" name="switch_maintenance" value="on"/>
+      <button type="submit" class="btn btn-default">Turn On Maintenance Mode</button>
+    {% endif %}
+  </form>
+
+  <a href="{{calendar_url}}">
+    <button class="btn btn-default">
+      {% if has_calendar_account %}
+        Disconnect Calendar Account
+      {% else %}
+        Connect Calendar Account
+      {% endif %}
+    </button>
+  </a>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

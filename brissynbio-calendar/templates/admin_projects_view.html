@@ -1,0 +1,26 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  {% if project %}
+    <table class="table table-hover">
+      <tr>
+        <th>Project</th>
+        <td>{{project.title}}</th>
+      </tr>
+      <tr>
+        <th>ID</th>
+        <td>{{project.id}}</td>
+      </tr>
+      <tr>
+        <th>BrisSynBio project?</th>
+        <td>{{project.bsb_project}}</td>
+      <tr>
+        <th>VAT exempt?</th>
+        <td>{{project.vat_exempt}}</td>
+      </tr>
+    </table>
+
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

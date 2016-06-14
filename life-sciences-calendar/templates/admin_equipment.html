@@ -1,0 +1,57 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+{% autoescape false %}
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr class="info">
+        <th>Equipment</th>
+        <th>Type</th>
+        <th>Laboratory</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in equipment %}
+        <tr onclick="window.document.location='/admin/equipment/item/{{item.idstring}}';">
+          <td>{{item.name}}</td>
+          <td>{{types_dict[item.equipment_type]}}</td>
+          <td>{{labs_dict[item.laboratory]}}</td>
+          <td>
+            {% if really_delete == item.idstring %}
+              <a href="/admin/equipment/item/{{item.idstring}}/really_delete">
+                <button type="button" class="btn btn-danger">DELETE</button>
+              </a>
+            {% else %}
+              <a href="/admin/equipment/item/{{item.idstring}}/delete">
+                <button type="button" class="btn btn-warning">Delete</button>
+              </a>
+            {% endif %}
+          </td>   
+        </tr>
+      {% endfor %}
+      <form class="form-group" action="/admin/equipment/item" method="post">
+        <tr>
+          <td>
+            <input type="text" class="form-control" id="item_name" 
+                   name="item_name" placeholder="Enter a name for the equipment"
+                   required="true" size="40">
+            </input>
+          </td>
+          <td>
+            {{ controls.combo_list(equipment_types, "item_type") }}
+          </td>
+          <td>
+            {{ controls.combo_list(labs, "item_lab") }}
+          </td>
+          <td>
+            <button type="submit" class="btn btn-default">Add</button>          
+          </td>   
+        </tr>
+      </form>
+    </tbody>
+  </table>
+
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

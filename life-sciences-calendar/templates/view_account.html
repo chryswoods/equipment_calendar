@@ -1,0 +1,126 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  {% if view_account %}
+      <div class="panel panel-default">
+        <div class="panel-heading container-fluid">
+          <div class="panel-title row">
+            <h3 class="col-xs-12">{{view_account.name}} ({{view_account.email}})</h3>
+          </div>
+        </div>
+
+        <div class="panel-body container-fluid">
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Username</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">{{view_account.name}}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Initials</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">{{view_account.initials}}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Default Project</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              {% if chosen_project %}
+                {{chosen_project.title}}
+              {% else %}
+                {{view_account.default_project}}
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Status</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              {% if view_account.is_admin %}
+              Administrator
+              {% elif view_account.is_approved %}
+              User
+              {% else %}
+              Unapproved
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-xs-12"><hr/></div>
+          </div>
+
+          {% if administered_equipment %}
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4"><strong>Administered Equipment</strong></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% for item in administered_equipment %}
+                  <a href="/equipment/item/{{item}}/admin">{{equipment_mapping[item]}}</a>
+                    {% if not loop.last %}
+                      ,&nbsp
+                    {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if authorised_equipment %}
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4"><strong>Authorised Equipment</strong></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% for item in authorised_equipment %}
+                  <a href="/equipment/item/{{item}}/admin">{{equipment_mapping[item]}}</a>
+                    {% if not loop.last %}
+                      ,&nbsp
+                    {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if pending_equipment %}
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4"><strong>Pending Equipment</strong></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% for item in pending_equipment %}
+                  <a href="/equipment/item/{{item}}/admin">{{equipment_mapping[item]}}</a>
+                    {% if not loop.last %}
+                      ,&nbsp
+                    {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if banned_equipment %}
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4"><strong>Banned Equipment</strong></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% for item in banned_equipment %}
+                  <a href="/equipment/item/{{item}}/admin">{{equipment_mapping[item]}}</a>
+                    {% if not loop.last %}
+                      ,&nbsp
+                    {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if view_account.information %}
+            <div class="row">
+              <div class="col-xs-12"><hr/></div>
+            </div>    
+
+            {% for info in view_account.information|dictsort %}
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>{{info[0]}}</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{info[1]}}</div>
+              </div>
+            {% endfor %}
+          {% endif %}
+
+        </div> <!-- panel-body -->
+      </div>
+
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

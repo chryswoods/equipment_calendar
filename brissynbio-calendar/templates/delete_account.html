@@ -1,0 +1,20 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+    <p>Welcome {{user}}</p>
+
+    <p>
+      To delete your account, please enter your PIN number
+      and then click 'Delete Account'.
+    </p>
+    <p>
+      <form action="delete_account" method="post">
+        <div><label for="pin_number">PIN Number : </label>
+             <input type="text" id="pin_number" name="pin_number"
+                    placeholder="4 digit PIN number"
+             />
+             <input type="submit" value="Delete Account"/>
+         </div>
+      </form>
+    </p>   
+{% endautoescape %}
+{% include '/templates/footer.html' %}

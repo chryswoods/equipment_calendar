@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{title}}</title>
+    <link rel="icon" type="image/png" href="/images/bsb_icon.png" />
+
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap-united.min.css" rel="stylesheet" media="screen">
+    <link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+
+    <!-- BrisSynBio customisation -->
+    <link href="/css/brissynbio.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <!-- Draw the main menu -->
+    <div class="container-fluid`">
+      <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" 
+                    data-toggle="collapse" data-target="#bsb-navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://bristol.ac.uk/brissynbio">
+              BrisSynBio
+            </a>
+          </div>
+
+          <div class="navbar-collapse collapse" id="bsb-navbar-collapse">
+            <ul class="nav navbar-nav">
+              {% for menu_link in left_menu_links %}     
+                {% if menu_link.hasSubmenus() %}
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-expanded="false">{{menu_link.text}} <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      {% for submenu_link in menu_link.submenu_links %}
+                        {% if submenu_link.is_active %}
+                          <li class="active">
+                            <a href="{{submenu_link.link}}">{{submenu_link.text}}</a>
+                          </li>
+                        {% else %}
+                          <li>
+                            <a href="{{submenu_link.link}}">{{submenu_link.text}}</a>
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </li>
+                {% elif menu_link.is_active %}
+                  <li class="active">
+                    <a href="{{ menu_link.link }}">{{ menu_link.text }}</a>
+                  </li>
+                {% else %}
+                  <li>
+                    <a href="{{ menu_link.link }}">{{ menu_link.text }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}  
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              {% if logged_in %}
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                     aria-expanded="false">{{email}} <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/account">account details</a></li>
+                    <li><a href="/feedback/leave_feedback">leave feedback</a></li>
+                    <li><a href="{{switch_url}}">switch user</a></li>
+                    <li><a href="{{logout_url}}">sign out</a></li>
+                  </ul>
+                </li>
+              {% else %}
+                <li><a href="{{ login_url }}">sign in</a></li>
+              {% endif %}
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container_fluid -->
+      </nav>
+
+      <div class="panel panel-default">
+        <div class="panel-body">
+          {% if second_menu_links %}
+            <ul class="nav nav-pills nav-justified">
+              {% for menu_link in second_menu_links %}
+                {% if menu_link.is_active %}
+                  <li role="presentation" class="active">
+                    <a href="{{ menu_link.link }}">{{ menu_link.text }}</a>
+                  </li>
+                {% else %}
+                  <li role="presentation">
+                    <a href="{{ menu_link.link }}">{{ menu_link.text }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+              <div class="panel panel-default">
+                <div class="panel-body">
+          {% endif %}
+
+          {% if under_maintenance %}
+            <div class="alert alert-info" role="alert">
+              Site is in maintenance mode
+            </div>
+          {% endif %}
+
+          {% if errors %}
+            <!-- Write any errors to the top of the page -->
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" 
+                        aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {% for error in errors %}
+                  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                  {{ error }}<br/>
+                {% endfor %}
+            </div>
+          {% elif messages %}
+            <!-- Write any messages to the top of the page -->
+            <div class="alert alert-info alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" 
+                        aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {% for message in messages %}
+                  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                  {{message}}<br/>
+                {% endfor %}
+            </div>
+          {% endif %}

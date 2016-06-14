@@ -1,0 +1,373 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  {% if constraints %}
+    <div class="panel panel-default" > 
+      <div class="panel-heading container-fluid">
+        <div class="panel-title row">
+           <div class="col-sm-10 col-xs-10">                
+             <h3>Customise constraints page for <a href="/equipment/labs/{{item.laboratory}}">{{laboratory_mapping[item.laboratory]}}</a> 
+                | <a href="/equipment/types/{{item.equipment_type}}">{{type_mapping[item.equipment_type]}}</a> | 
+                  <a href="/equipment/item/{{item.idstring}}/admin">{{item.name}}</a></h3>
+           </div>
+        </div>
+      </div>
+
+      <div class="panel-body container-fluid">
+        <div class="row">
+          <form class="form-horizontal" action="/equipment/item/{{item.idstring}}/admin_cons/edit_info" method="post">
+            <label class="col-md-2 col-sm-3 col-xs-4 control-label" for="information"
+                   data-toggle="popover" data-trigger="click hover"
+                   data-content="This is a short paragraph that can be presented to the user when they are making 
+                                 their booking. It should provide a brief overview of the booking requirements, e.g.
+                                 when bookings can and can't be made, and why.">Information [?]</label>
+            {% if edit_info %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% if constraints.booking_info %}
+                  <textarea name="information" id="information" style="width:100%" 
+                            class="form-control" rows="5">{{constraints.booking_info}}</textarea>
+                {% else %}
+                  <textarea name="information" id="information" style="width:100%" 
+                            class="form-control" rows="5"></textarea>
+                {% endif %}
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <button type="submit" class="btn btn-default btn-xs">Update</button>
+              </div>
+            {% else %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% if constraints.booking_info %}
+                  <div class="well">{{constraints.booking_info.replace("\n","<br/>")}}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <a href="/equipment/item/{{item.idstring}}/admin_cons/edit_info">
+                  <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                    Edit
+                  </button>
+                </a>
+              </div>
+            {% endif %}
+          </form>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <form class="form-horizontal" action="/equipment/item/{{item.idstring}}/admin_cons/edit_unit" method="post">
+            <label class="col-md-2 col-sm-3 col-xs-4 control-label"
+                   data-toggle="popover" data-trigger="click hover"
+                   data-content="This is the unit of booking, i.e. what is the sensible amount of 
+                                 time that this equipment should be booked for? Is it booked by the 
+                                 minute, hour, half-day, day or week? The choice of unit will change
+                                 how the users will see the calendar, with equipment booked by the 
+                                 week showing a week view, while equipment booked by the minute 
+                                 providing a minute view.">Bookable Unit [?]</label>
+            {% if edit_unit %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {{ controls.combo_list(bookable_units, "unit", bookable_units[constraints.booking_unit]) }}
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <button type="submit" class="btn btn-default btn-xs">Update</button>
+              </div>
+            {% else %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {{ constraints.booking_unit_string }}
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <a href="/equipment/item/{{item.idstring}}/admin_cons/edit_unit">
+                  <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                    Edit
+                  </button>
+                </a>
+              </div>
+            {% endif %}
+          </form>
+        </div>
+
+        <hr/>
+        <div class="row">
+          <form class="form-horizontal" action="/equipment/item/{{item.idstring}}/admin_cons/edit_days" method="post">
+            <label class="col-md-2 col-sm-3 col-xs-4 control-label"
+                   data-toggle="popover" data-trigger="click hover"
+                   data-content="These are the days on which bookings can be made. Bookings can only
+                                 start or stop on the marked days. If you don't want people to be able 
+                                 to access the equipment over the weekend then ensure that only  
+                                 Mon-Fri are marked.">Bookable Days [?]</label>
+            {% if edit_days %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <label class="checkbox-inline">
+                  {% if constraints.allowed_days[0] %}
+                    <input type="checkbox" name="monday" id="monday" value="1" checked>Mon</input>
+                  {% else %}
+                    <input type="checkbox" name="monday" id="monday" value="1">Mon</input>
+                  {% endif %}
+                </label>
+                <label class="checkbox-inline">
+                  {% if constraints.allowed_days[1] %}
+                    <input type="checkbox" name="tuesday" id="tuesday" value="1" checked>Tue</input>
+                  {% else %}
+                    <input type="checkbox" name="tuesday" id="tuesday" value="1">Tue</input>
+                  {% endif %}
+                </label>
+                <label class="checkbox-inline">
+                  {% if constraints.allowed_days[2] %}
+                    <input type="checkbox" name="wednesday" id="wednesday" value="1" checked>Wed</input>
+                  {% else %}
+                    <input type="checkbox" name="wednesday" id="wednesday" value="1">Wed</input>
+                  {% endif %}
+                </label>
+                <label class="checkbox-inline">
+                  {% if constraints.allowed_days[3] %}
+                    <input type="checkbox" name="thursday" id="thursday" value="1" checked>Thur</input>
+                  {% else %}
+                    <input type="checkbox" name="thursday" id="thursday" value="1">Thur</input>
+                  {% endif %}
+                </label>
+                <label class="checkbox-inline">
+                  {% if constraints.allowed_days[4] %}
+                    <input type="checkbox" name="friday" id="friday" value="1" checked>Fri</input>
+                  {% else %}
+                    <input type="checkbox" name="friday" id="friday" value="1">Fri</input>
+                  {% endif %}
+                </label>
+                <label class="checkbox-inline">
+                  {% if constraints.allowed_days[5] %}
+                    <input type="checkbox" name="saturday" id="saturday" value="1" checked>Sat</input>
+                  {% else %}
+                    <input type="checkbox" name="saturday" id="saturday" value="1">Sat</input>
+                  {% endif %}
+                </label>
+                <label class="checkbox-inline">
+                  {% if constraints.allowed_days[6] %}
+                    <input type="checkbox" name="sunday" id="sunday" value="1" checked>Sun</input>
+                  {% else %}
+                    <input type="checkbox" name="sunday" id="sunday" value="1">Sun</input>
+                  {% endif %}
+                </label>
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <button type="submit" class="btn btn-default btn-xs">Update</button>
+              </div>
+            {% else %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% if constraints.allowed_days[0] %}
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true">Mon&nbsp;</span>
+                {% else %}
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true">Mon&nbsp;</span>
+                {% endif %}
+                {% if constraints.allowed_days[1] %}
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true">Tue&nbsp;</span>
+                {% else %}
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true">Tue&nbsp;</span>
+                {% endif %}
+                {% if constraints.allowed_days[2] %}
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true">Wed&nbsp;</span>
+                {% else %}
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true">Wed&nbsp;</span>
+                {% endif %}
+                {% if constraints.allowed_days[3] %}
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true">Thur&nbsp;</span>
+                {% else %}
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true">Thur&nbsp;</span>
+                {% endif %}
+                {% if constraints.allowed_days[4] %}
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true">Fri&nbsp;</span>
+                {% else %}
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true">Fri&nbsp;</span>
+                {% endif %}
+                {% if constraints.allowed_days[5] %}
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true">Sat&nbsp;</span>
+                {% else %}
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true">Sat&nbsp;</span>
+                {% endif %}
+                {% if constraints.allowed_days[6] %}
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true">Sun&nbsp;</span>
+                {% else %}
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true">Sun&nbsp;</span>
+                {% endif %}
+              </div>          
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <a href="/equipment/item/{{item.idstring}}/admin_cons/edit_days">
+                  <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                    Edit
+                  </button>
+                </a>
+              </div>
+            {% endif %}
+          </form>
+        </div>
+
+        <hr/>
+        <div class="row">
+          <form class="form-horizontal" action="/equipment/item/{{item.idstring}}/admin_cons/edit_range" method="post">
+            <label class="col-md-2 col-sm-3 col-xs-4 control-label"
+                   data-toggle="popover" data-trigger="click hover"
+                   data-content="This is the range of time during the day when bookings can start or stop.
+                                 You should use this when a person needs to be present at the beginning or 
+                                 end of a booking, e.g. because samples have to be put into or taken out
+                                 of the equipment. This constraint can be used to ensure that the start
+                                 and end of a booking always occurs during office hours.">Bookable Range [?]</label>
+            {% if edit_range %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <label for="range_start">From</label>
+                <input type="text" placeholder="24hr time, e.g. 9:00, or leave blank if you don't want a range" 
+                       {% if constraints.allowed_range_start %}
+                         value="{{constraints.allowed_range_start.strftime("%H:%M")}}"
+                       {% else %}
+                         value=""
+                       {% endif %}
+                       class="form-control" 
+                       id="range_start" name="range_start"></input>
+                <label for="end_time">until</label>
+                <input type="text" placeholder="24hr time, e.g. 17:00, or leave blank if you don't want a range" 
+                       {% if constraints.allowed_range_end %}
+                         value="{{constraints.allowed_range_end.strftime("%H:%M")}}"
+                       {% else %}
+                         value=""
+                       {% endif %}
+                       class="form-control" 
+                       id="range_end" name="range_end"></input>
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <button type="submit" class="btn btn-default btn-xs">Update</button>
+              </div>
+            {% else %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% if constraints.allowed_range_start and constraints.allowed_range_end %}
+                  Bookings allowed to start or stop only between 
+                  {{constraints.allowed_range_start.strftime("%H:%M")}} and 
+                  {{constraints.allowed_range_end.strftime("%H:%M")}}
+                {% else %}
+                  Bookings allowed to start or stop at any time
+                {% endif %}
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <a href="/equipment/item/{{item.idstring}}/admin_cons/edit_range">
+                  <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                    Edit
+                  </button>
+                </a>
+              </div>
+            {% endif %}
+          </form>
+        </div>
+
+        <hr/>
+        <div class="row">
+          <form class="form-horizontal" action="/equipment/item/{{item.idstring}}/admin_cons/edit_mintime" method="post">
+            <label class="col-md-2 col-sm-3 col-xs-4 control-label" for="mintime"
+                   data-toggle="popover" data-trigger="click hover"
+                   data-content="This is the minimum amount of time that a user can request in a single
+                                 booking. The time should be written as days, minutes, hours, using 
+                                 'd' for days, 'h' for hours and 'm' for minutes, e.g. '1d 2h 5m' 
+                                 would specify 1 day, 2 hours and 5 minutes. Use this to ensure that someone
+                                 books sufficient time to complete an experiment (i.e. doesn't book
+                                 only 20 minutes when experiments will take at least one day!)">Minimum Time [?]</label>
+            {% if edit_mintime %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <input type="text" name="mintime" id="mintime" style="width:100%"
+                       class="form-control" placeholder="Minimum time using 'd' for days, 'h' for hours, 'm' for minutes, or 'none'"
+                  {% if constraints.min_booking_time %}
+                    value="{{controls.toDaysHoursMinutes(constraints.min_booking_time)}}"
+                  {% else %}
+                    value="none"
+                  {% endif %}
+                  required>
+                </input>
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <button type="submit" class="btn btn-default btn-xs">Update</button>
+              </div>
+            {% else %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% if constraints.min_booking_time %}
+                  {{controls.toDaysHoursMinutes(constraints.min_booking_time)}}
+                {% else %}
+                  none
+                {% endif %}
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <a href="/equipment/item/{{item.idstring}}/admin_cons/edit_mintime">
+                  <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                    Edit
+                  </button>
+                </a>
+              </div>
+            {% endif %}
+          </form>
+        </div>
+
+        <hr/>
+        <div class="row">
+          <form class="form-horizontal" action="/equipment/item/{{item.idstring}}/admin_cons/edit_maxtime" method="post">
+            <label class="col-md-2 col-sm-3 col-xs-4 control-label"
+                   data-toggle="popover" data-trigger="click hover"
+                   data-content="This is the maximum amount of time that a user can request in a single
+                                 booking. The time should be written as days, minutes, hours, using 
+                                 'd' for days, 'h' for hours and 'm' for minutes, e.g. '1d 2h 5m' 
+                                 would specify 1 day, 2 hours and 5 minutes. Use this to ensure that someone
+                                 can't monopolise the equipment">Maximum Time [?]</label>
+            {% if edit_maxtime %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <input type="text" name="maxtime" id="maxtime" style="width:100%"
+                       class="form-control" placeholder="Maximum time using 'd' for days, 'h' for hours, 'm' for minutes, or 'forever'"
+                  {% if constraints.max_booking_time %}
+                    value="{{controls.toDaysHoursMinutes(constraints.max_booking_time)}}"
+                  {% else %}
+                    value="forever"
+                  {% endif %}
+                  required>
+                </input>
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <button type="submit" class="btn btn-default btn-xs">Update</button>
+              </div>
+            {% else %}
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% if constraints.max_booking_time %}
+                  {{controls.toDaysHoursMinutes(constraints.max_booking_time)}}
+                {% else %}
+                  forever
+                {% endif %}
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <a href="/equipment/item/{{item.idstring}}/admin_cons/edit_maxtime">
+                  <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                    Edit
+                  </button>
+                </a>
+              </div>
+            {% endif %}
+          </form>
+        </div>
+
+      </div>
+      
+      <hr/>
+
+      <p align="center">
+      <a href="/equipment/item/{{item.idstring}}/book?booking_action=demo_reserving">
+        <button type="submit" class="btn btn-default">Preview Booking Page</button>
+      </a>
+      </p>
+
+  {% endif %}
+
+  </div>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

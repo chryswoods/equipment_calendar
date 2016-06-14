@@ -1,0 +1,295 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  {% if requirements %}
+    <div class="panel panel-default" > 
+      <div class="panel-heading container-fluid">
+        <div class="panel-title row">
+           <div class="col-sm-10 col-xs-10">                
+             <h3>Customise booking page for <a href="/equipment/labs/{{item.laboratory}}">{{laboratory_mapping[item.laboratory]}}</a> 
+                | <a href="/equipment/types/{{item.equipment_type}}">{{type_mapping[item.equipment_type]}}</a> | 
+                  <a href="/equipment/item/{{item.idstring}}/admin">{{item.name}}</a></h3>
+           </div>
+        </div>
+      </div>
+
+      <div class="panel-body container-fluid">
+        <div class="row">
+          {% if edit_intro %}
+            <form class="form-inline" action="/equipment/item/{{item.idstring}}/admin_reqs/edit_intro" method="post">
+              <div class="col-md-2 col-sm-3 col-xs-4"><label for="introduction"><strong>Introduction</strong></label></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% if requirements.intro %}
+                  <textarea name="introduction" id="introduction" style="width:100%" 
+                            class="form-control" rows="5">{{requirements.intro}}</textarea>
+                {% else %}
+                  <textarea name="introduction" id="introduction" style="width:100%" 
+                            class="form-control" rows="5"></textarea>
+                {% endif %}
+              </div>
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <button type="submit" class="btn btn-default btn-xs">Update</button>
+              </div>
+            </form>
+          {% else %}
+            <div class="col-md-2 col-sm-3 col-xs-4">
+              <strong>Introduction</strong>
+            </div>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              {% if requirements.intro %}
+                <div class="well">{{requirements.intro.replace("\n","<br/>")}}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-2 col-sm-3 col-xs-4"></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              <a href="/equipment/item/{{item.idstring}}/admin_reqs/edit_intro">
+                <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                  Edit
+                </button>
+              </a>
+            </div>
+          {% endif %}
+        </div>
+        <hr/>
+        <div class="row">
+          {% if edit_auth %}
+            <form class="form-inline" action="/equipment/item/{{item.idstring}}/admin_reqs/edit_auth" method="post">
+              <div class="col-md-2 col-sm-3 col-xs-4"><label for="needs_authorisation">
+                     <strong>Needs Authorisation</strong></label></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {{controls.edit_bool(requirements.needs_authorisation,"needs_authorisation")}}
+                <button type="submit" class="btn btn-default btn-xs">Update</button>
+              </div>
+            </form>
+          {% else %}
+            <div class="col-md-2 col-sm-3 col-xs-4">
+              <strong>Needs Authorisation</strong>
+            </div>
+            <div class="col-md-10 col-sm-9 col-xs-8">
+              {{ controls.view_bool(requirements.needs_authorisation) }}
+              <a href="/equipment/item/{{item.idstring}}/admin_reqs/edit_auth">
+                <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                  Edit
+                </button>
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if requirements.requirements %}
+    <div class="panel-group" id="extra_reqs" role="tablist" aria-multiselectable="true">
+
+      {% for requirement in requirements.requirements %}
+        <div class="panel panel-info">
+          <div class="panel-heading container-fluid" role="tab" id="heading_{{loop.index}}">
+            <div class="panel-title row">
+              <a class="text-muted"
+                 data-toggle="collapse" aria-expanded="false" data-parent="#extra_reqs" href="#collapse_{{loop.index}}"
+                 aria-controls="collapse_{{loop.index}}">
+                <div class="col-md-1 col-sm-1 col-xs-1">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </div>
+              </a>
+
+              <div class="col-sm-10 col-xs-10">
+                <h3 class="panel-title">{{requirement.reqname}}</h3>
+              </div>
+              <div class="col-sm-1 col-xs-1">
+                {% if not loop.first %}
+                  <a href="/equipment/item/{{item.idstring}}/admin_reqs/move_up?req_name={{requirement.reqname}}">
+                    <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                      <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                    </button>
+                  </a>
+                {% endif %}
+
+                {% if not loop.last %}
+                  <a href="/equipment/item/{{item.idstring}}/admin_reqs/move_down?req_name={{requirement.reqname}}">
+                    <button type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+                      <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                    </button>
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          {% if requirement.reqname in [really_delete,edit_req,view_req] %}
+          <div id="collapse_{{loop.index}}" class="panel-collapse collapse in" role="tabpanel" 
+               aria-labelledby="heading_{{loop.index}}">
+          {% else %}
+          <div id="collapse_{{loop.index}}" class="panel-collapse collapse" role="tabpanel" 
+               aria-labelledby="heading_{{loop.index}}"> 
+          {% endif %}     
+          <div class="panel-body container-fluid">
+            {% if edit_req == requirement.reqname %}
+              <form class="form-inline" action="/equipment/item/{{item.idstring}}/admin_reqs/edit_req" method="post">
+                <input type="hidden" id="req_name" name="req_name" value="{{requirement.reqname}}"/>
+                <div class="row">
+                  <div class="col-md-2 col-sm-3 col-xs-4"><label for="edit_req"><strong>Type</strong></label></div>
+                  <div class="col-md-10 col-sm-9 col-xs-8">
+                    <select class="form-control" style="width:100%" id="req_type" name="req_type">
+                      <option value="{{requirement.reqtype}}">{{requirement_types.typeToString(requirement.reqtype)}}</option>
+                      <option value="" disabled>--------</option>
+                        {% for typ in requirement_types.types %}
+                          <option value="{{typ}}">{{requirement_types.typeToString(typ)}}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <hr/>
+                <div class="row">
+                  <div class="col-md-2 col-sm-3 col-xs-4"><label for="req_help"><strong>Allowable values</strong></label></div>
+                  <div class="col-md-10 col-sm-9 col-xs-8">
+                    <input type="text" placeholder="e.g. 10, 15, 20-30, 35+ or 'all'" class="form-control" 
+                           {% if requirement.allowed_values %}
+                             value="{{requirement.allowed_values}}"
+                           {% else %}
+                             value="all"
+                           {% endif %}
+                           style="width:100%" id="allowed_values" name="allowed_values"/>
+                  </div>
+                </div>
+                <hr/>
+                <div class="row">
+                  <div class="col-md-2 col-sm-3 col-xs-4"><label for="req_help"><strong>Helptext</strong></label></div>
+                  <div class="col-md-10 col-sm-9 col-xs-8">
+                    <textarea class="form-control" style="width:100%" id="req_help" name="req_help">{{requirement.reqhelp}}</textarea>
+                  </div>
+                </div>
+                <hr/>
+                <div class="row">
+                  <div class="col-md-2 col-sm-3 col-xs-4"></div>
+                  <div class="col-md-10 col-sm-9 col-xs-8">
+                    <button type="submit" class="btn btn-default">Update</button>
+                  </div>
+                </div>
+              </form>
+            {% else %}
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Type</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">
+                  {{requirement_types.typeToString(requirement.reqtype)}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Allowable values</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">
+                  {% if requirement.allowed_values %}
+                    {{requirement.allowed_values}}
+                  {% else %}
+                    all
+                  {% endif %}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Helptext</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-4">{{requirement.reqhelp}}</div>
+              </div>
+              <hr/>
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"></div>
+                <div class="col-md-1 col-sm-1 col-xs-1">
+                  <a href="/equipment/item/{{item.idstring}}/admin_reqs/edit_req?req_name={{requirement.reqname}}">
+                    <button type="button" class="btn btn-default" aria-label="Left Align">
+                      Edit
+                    </button>
+                  </a>
+                </div>
+                <div class="col-md-1 col-sm-1 col-xs-1">
+                  {% if really_delete == requirement.reqname %}
+                    <a href="/equipment/item/{{item.idstring}}/admin_reqs/really_del_req?req_name={{requirement.reqname}}">
+                      <button type="button" class="btn btn-danger" aria-label="Left Align">
+                        Delete!
+                      </button>
+                    </a>
+                  {% else %}
+                    <a href="/equipment/item/{{item.idstring}}/admin_reqs/del_req?req_name={{requirement.reqname}}">
+                      <button type="button" class="btn btn-default" aria-label="Left Align">
+                        Delete?
+                      </button>
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+     </div>
+     {% endif %}
+
+      <div class="panel panel-success">
+        <div class="panel-heading container-fluid">
+          <div class="panel-title row">
+             <div class="col-sm-10 col-xs-10">                
+                <h3 class="panel-title">New required information...</h3>
+             </div>
+          </div>
+        </div>
+        <div class="panel-body container-fluid">
+          <form class="form-inline" action="/equipment/item/{{item.idstring}}/admin_reqs/add_req" method="post">
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4"><label for="req_name"><strong>Name</strong></label></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <input class="form-control" style="width:100%" type="text" id="req_name" name="req_name" placeholder="type here..." required/>
+              </div>
+            </div>
+            <hr/>
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4"><label for="req_type"><strong>Type</strong></label></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <select class="form-control" style="width:100%" id="req_type" name="req_type">
+                  <option value="">choose...</option>
+                  {% for typ in requirement_types.types %}
+                    <option value="{{typ}}">{{requirement_types.typeToString(typ)}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <hr/>
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4"><label for="req_help"><strong>Allowable values</strong></label></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <input type="text" placeholder="e.g. 10, 15, 20-30, 35+ or 'all'" class="form-control" 
+                       style="width:100%" id="allowed_values" name="allowed_values"/>
+              </div>
+            </div>
+            <hr/>
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4"><label for="req_help"><strong>Helptext</strong></label></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <textarea class="form-control" style="width:100%" id="req_help" name="req_help"></textarea>
+              </div>
+            </div>
+            <hr/>
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4"></div>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                <button type="submit" class="btn btn-default">Add Requirement</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <hr/>
+
+      <p align="center">
+      <a href="/equipment/item/{{item.idstring}}/book?booking_action=demo_booking">
+        <button type="submit" class="btn btn-default">Preview Booking Page</button>
+      </a>
+      </p>
+
+  {% endif %}
+
+  </div>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

@@ -1,0 +1,52 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  {% if item %}
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3>Report a Problem with <a href="/equipment/labs/{{item.laboratory}}">{{laboratory_mapping[item.laboratory]}}</a> 
+            | <a href="/equipment/types/{{item.equipment_type}}">{{type_mapping[item.equipment_type]}}</a> | 
+              <a href="/equipment/item/{{item.idstring}}/admin">{{item.name}}</a></h3>
+      </div>
+      <div class="panel-body">
+        <form class="form-horizontal" action="/feedback/report_problem" method="post">
+          <input type="hidden" id="equipment" name="equipment" value="{{item.idstring}}"/>
+          <div class="form-group">
+            <label for="problem_type" class="col-sm-2 control-label">Type of Problem</label>
+            <div class="col-sm-10">
+              <select class="form-control" name="problem_type" id="problem_type">
+                <option value="None">Choose...</option>
+                {% for problem in problem_types %}
+                  {% if problem[0] == chosen_problem %}
+                    <option value="{{problem[0]}}" selected="selected">{{problem[1]}}</option>
+                  {% else %}
+                    <option value="{{problem[0]}}">{{problem[1]}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="problem_description" class="col-sm-2 control-label">Description</label>
+            <div class="col-sm-10">
+              {% if chosen_description %}
+                <textarea class="form-control" rows="6" name="problem_description" id="problem_description">{{chosen_description}}</textarea>
+              {% else %}
+                <textarea class="form-control" rows="6" name="problem_description" id="problem_description"></textarea>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-default">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

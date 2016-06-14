@@ -1,0 +1,56 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr class="info">
+        <th>Laboratory</th>
+        <th>Owners</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lab in labs %}
+         <tr onclick="window.document.location='/admin/equipment/labs/{{lab.idstring}}';">
+           <td>{{lab.name}}</td>
+           <td>
+             {{ controls.view_list(lab.owners) }}
+           </td>
+          <td>
+            {% if really_delete == lab.idstring %}
+              <a href="/admin/equipment/labs/{{lab.idstring}}/really_delete">
+                <button type="button" class="btn btn-danger">DELETE</button>
+              </a>
+            {% else %}
+              <a href="/admin/equipment/labs/{{lab.idstring}}/delete">
+                <button type="button" class="btn btn-warning">Delete</button>
+              </a>
+            {% endif %}
+          </td>   
+         </tr>
+      {% endfor %}
+      <form class="form-group" action="/admin/equipment/labs" method="post">
+        <tr>
+          <td>
+            <input type="text" class="form-control" id="lab_name" 
+                   name="lab_name" placeholder="Enter name of lab"
+                   required="true" size="40">
+            </input>
+          </td>
+          <td>
+            <input type="text" class="form-control" id="lab_owners"
+                   name="lab_owners" placeholder="Enter lab owners" size="40">
+            </input>
+          </td>
+          <td>
+            <button type="submit" class="btn btn-default">Add</button>          
+          </td>   
+        </tr>
+      </form>
+    </tbody>
+  </table>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

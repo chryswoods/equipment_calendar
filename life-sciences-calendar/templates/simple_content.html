@@ -1,0 +1,15 @@
+{% include '/templates/header.html' %}
+{% autoescape false %}
+
+  {% if page_title %}
+    <h3>{{page_title}}</h3>
+  {% endif %}
+
+  {% if page_content %}
+    {% for paragraph in page_content %}
+      <p>{{paragraph}}</p>
+    {% endfor %}
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

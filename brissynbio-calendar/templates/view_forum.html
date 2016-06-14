@@ -1,0 +1,107 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  <form class="form-inline" action="/forum" method="get">
+    <div class="form-group">
+      <label for="topic_mask">View</label>
+      <select class="form-control" name="topic_mask" id="topic_mask">
+        {% if topic_mask %}
+          <option value="{{topic_mask}}">{{topic_mask}}</option>
+          <option value="" disabled>--------</option>
+        {% endif %}
+        <option value="open">open</option>
+        <option value="all">all</option>
+        <option value="problem">problem</option>
+        <option value="event">event</option>
+        <option value="help">help</option>
+        <option value="my">my</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="range_start">topics between</label>
+      <input type="text" size="10" value='{{range_start.strftime("%d %B %Y")}}' readonly class="picker_range_start form-control"/>
+      {{ datetime_pickers.addDatePicker("picker_range_start", "range_start") }}
+    </div>
+    <div class="form-group">
+      <label for="range_end">and</label>
+      <input type="text" size="10" value='{{range_end.strftime("%d %B %Y")}}' readonly class="picker_range_end form-control"/>
+      {{ datetime_pickers.addDatePicker("picker_range_end", "range_end") }}
+    </div>
+    <div class="form-group">
+      <div>
+        <button type="submit" class="btn btn-default">View</button>
+      </div>
+    </div>
+    <input type="hidden" id="range_start" name="range_start" value="{{range_start.strftime('%d-%m-%Y')}}" readonly />
+    <input type="hidden" id="range_end" name="range_end" value="{{range_end.strftime('%d-%m-%Y')}}" readonly /> 
+  </form>
+
+  <br/>
+
+  {% if feedback %}
+    <div style="height:60%;overflow:auto;">
+    {{controls.view_feedback(feedback,"feedback","feedback_box",False,False,account,account_mapping)}}
+    </div>
+  {% else %}
+    <div class="well">No discussions active in this date range.</div>
+  {% endif %}
+
+  <div class="row container-fluid">
+    <div class="col-sm-2 col-xs-2">
+      <form action="/forum" method="get">
+        <input type="hidden" id="range_start" name="range_start" value="{{older_range_start.strftime('%d-%m-%Y')}}" />
+        <input type="hidden" id="range_end" name="range_end" value="{{older_range_end.strftime('%d-%m-%Y')}}" />
+        {% if topic_mask %}
+          <input type="hidden" id="topic_mask" name="topic_mask" value="{{topic_mask}}"/>
+        {% endif %}
+        <button class="btn btn-default" type="submit">
+          <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Older
+        </button>
+      </form>
+    </div>
+    {% if newer_range_start < today_start %}
+      <div class="col-sm-2 col-xs-2">
+        <form action="/forum" method="get">
+          <input type="hidden" id="range_start" name="range_start" value="{{newer_range_start.strftime('%d-%m-%Y')}}" />
+          <input type="hidden" id="range_end" name="range_end" value="{{newer_range_end.strftime('%d-%m-%Y')}}" />
+          {% if topic_mask %}
+            <input type="hidden" id="topic_mask" name="topic_mask" value="{{topic_mask}}"/>
+          {% endif %}
+          <button class="btn btn-default" type="submit">
+            Newer <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+          </button>
+        </form>
+      </div>
+    {% else %}
+      <div class="col-sm-2 col-xs-2">
+        <button class="btn btn-default" disabled="disabled">
+            Newer <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+
+  <hr/>
+
+  <form class="form-inline" action="/forum" method="post">
+    <div class="row container-fluid">
+      <div class="form-group">
+        <label for="topic_type">Create new topic of type</label>
+        <select class="form-control" name="topic_type" id="topic_type">
+           {% for problem in feedback_types %}
+             <option value="{{problem[0]}}">{{problem[1]}}</option>
+           {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <div>
+          <button type="submit" class="btn btn-default">Create</button>
+        </div>
+      </div>      
+    </div>
+  </form>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

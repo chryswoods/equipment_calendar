@@ -1,0 +1,140 @@
+{% include '/templates/header.html' %}
+
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  {% if calendar %}
+    <table class="table table-hover">
+      <tr>
+        <th>Calendar</th>
+        <td>{{calendar.name}}</th>
+        <td></td>
+      </tr>
+      <tr>
+        <th>Google Calendar</th>
+        {% if calendar.gcal_id %}
+          <td>
+             <a href="{{calendar_url}}">
+               {{calendar.gcal_id}}
+             </a>
+          </td>
+          <td>
+            {% if really_disconnect %}
+              <a href="/admin/calendars/{{calendar.idstring}}/really_disconnect">
+                <button type="button" class="btn btn-danger" aria-label="Left Align">
+                  DISCONNECT
+                </button>
+              </a>
+            {% else %}
+              <a href="/admin/calendars/{{calendar.idstring}}/disconnect">
+                <button type="button" class="btn btn-warning" aria-label="Left Align">
+                  Disconnect
+                </button>
+              </a>
+            {% endif %}
+          </td>
+        {% else %}
+          <td>Not connected</td>
+          <td>
+            <a href="/admin/calendars/{{calendar.idstring}}/connect">
+              <button type="button" class="btn btn-success" aria-label="Left Align">
+                Connect
+              </button>
+            </a>
+          </td>
+        {% endif %}
+      </tr>
+      {% if edit_viewers %}
+      <tr>
+        <form class="form-group" action="/admin/calendars/{{calendar.idstring}}/edit_viewers" method="post">
+          <tr>
+            <th width="20%">Viewer(s)</th>
+            <td width="60%">
+              {{ controls.edit_list("edit_viewers", calendar.viewers, "viewer", "Add an email address...") }}
+           </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Viewer(s)</th>
+        <td width="60%">
+          {{ controls.view_list(calendar.viewers) }}
+        </td>
+        <td width="20%">
+          <a href="/admin/calendars/{{calendar.idstring}}/edit_viewers">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+      {% if edit_admin %}
+      <tr>
+        <form class="form-group" action="/admin/calendars/{{calendar.idstring}}/edit_admin" method="post">
+          <tr>
+            <th width="20%">Needs Admin?</th>
+            <td width="60%">
+              {{ controls.edit_bool(calendar.needs_admin, "needs_admin") }}
+           </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Needs Admin?</th>
+        <td width="60%">
+          {{ controls.view_bool(calendar.needs_admin) }}
+        </td>
+        <td width="20%">
+          <a href="/admin/calendars/{{calendar.idstring}}/edit_admin">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+      {% if edit_info %}
+      <tr>
+        <form class="form-group" action="/admin/calendars/{{calendar.idstring}}/edit_info" method="post">
+          <tr>
+            <th width="20%">Information</th>
+            <td width="60%">
+              {{ controls.edit_dictionary("edit_info", calendar.information_keys, 
+                                          calendar.information, "information") }}
+            </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Information</th>
+        <td width="60%"> {{controls.view_dictionary(calendar.information_keys, 
+                                                    calendar.information)}}</td>
+        <td width="20%">
+          <a href="/admin/calendars/{{calendar.idstring}}/edit_info">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+    </table>
+
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

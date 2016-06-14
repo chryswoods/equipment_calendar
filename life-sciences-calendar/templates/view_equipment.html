@@ -1,0 +1,58 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  {% if item %}
+    {% if acl %}
+      {% if acl.isAuthorised() %}
+        {% include '/templates/default_booking.html' %}
+      {% elif acl.isPending() %}
+        <h3><a href="/equipment/labs/{{item.laboratory}}">{{laboratory_mapping[item.laboratory]}}</a> 
+          | <a href="/equipment/types/{{item.equipment_type}}">{{type_mapping[item.equipment_type]}}</a> | 
+            <a href="/equipment/item/{{item.idstring}}">{{item.name}}</a></h3>
+
+        <p>The equipment owners are currently processing your request for access to this piece of equipment.
+           Please be patient while they consider your request. You will be notified when they have reached
+           their decision.</p>
+      {% elif acl.isBanned() %}
+        <h3><a href="/equipment/labs/{{item.laboratory}}">{{laboratory_mapping[item.laboratory]}}</a> 
+          | <a href="/equipment/types/{{item.equipment_type}}">{{type_mapping[item.equipment_type]}}</a> | 
+            <a href="/equipment/item/{{item.idstring}}">{{item.name}}</a></h3>
+
+        <p>The equipment owners have decided that you are not allowed to have access to this piece of equipment.</p>
+        {% if acl.reason %}
+          <p>The administrators denied access because "{{acl.reason}}".</p>
+        {% endif %}
+      {% else %}
+        <h3><a href="/equipment/labs/{{item.laboratory}}">{{laboratory_mapping[item.laboratory]}}</a> 
+          | <a href="/equipment/types/{{item.equipment_type}}">{{type_mapping[item.equipment_type]}}</a> | 
+            <a href="/equipment/item/{{item.idstring}}">{{item.name}}</a></h3>
+
+        <p>For an unknown reason, you are not able to gain access to this piece of equipment. Please
+           <a href="mailto:lifesciences.equipment@gmail.com">email us</a> to let us know about this problem.</p>
+      {% endif %}
+    {% else %}
+      <h3><a href="/equipment/labs/{{item.laboratory}}">{{laboratory_mapping[item.laboratory]}}</a> 
+        | <a href="/equipment/types/{{item.equipment_type}}">{{type_mapping[item.equipment_type]}}</a> | 
+          <a href="/equipment/item/{{item.idstring}}">{{item.name}}</a></h3>
+
+      <p>You do not yet have access to this piece of equipment. If you would like access, then please
+         tell us why you need access in the box below, then click "Request Access".</p>
+      <p>
+        <form class="form-group" action="/equipment/item/{{item.idstring}}/request_access" method="post">
+          <div class="input-group">
+            <input type="text" class="form-control" id="reason" 
+                   name="reason" placeholder="Please say why you want access to this piece of equipment..."
+                   required="true"></input>
+            <input type="hidden" id="pending_user" name="pending_user" value="{{email}}"/>
+            <input class="bsb-hidden-submit" type="submit" tabindex="-1"/>
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-default">Request Access</button>
+            </span>
+          </div>
+        </form>
+      </p>
+    {% endif %}
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

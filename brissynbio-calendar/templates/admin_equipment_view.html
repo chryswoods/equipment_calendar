@@ -1,0 +1,192 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  {% if equipment_item %}
+    <table class="table table-hover">
+      <tr>
+        <th>Name</th>
+        <td>{{equipment_item.name}}</td><td></td>
+      </tr>
+      <tr>
+        <th>Equipment Type</th>
+        <td>
+          {% if equipment_type %}
+            <a href="/admin/equipment/types/{{equipment_type.idstring}}">
+              {{equipment_type.name}}
+            </a>
+          {% else %}
+            Unknown
+          {% endif %}
+        </td><td></td>
+      </tr>
+      <tr>
+        <th>Laboratory</th>
+        <td>
+          {% if lab %}
+            <a href="/admin/equipment/labs/{{lab.idstring}}">
+              {{lab.name}}
+            </a>
+          {% else %}
+            Unknown
+          {% endif %}
+        </td><td></td>
+      </tr>
+      <tr>
+        <th>Calendar</th>
+        <td>
+          {% if calendar %}
+            <a href="/admin/calendars/{{calendar.name}}">
+              {{calendar.name}}
+            </a>
+          {% else %}
+            <a href="/admin/equipment/item/{{equipment_item.idstring}}/create_calendar">
+              Create calendar...
+            </a>
+          {% endif %}
+        </td><td></td>
+      </tr>
+      {% if edit_administrators %}
+      <tr>
+        <form class="form-group" action="/admin/equipment/item/{{equipment_item.idstring}}/edit_administrators" method="post">
+          <tr>
+            <th width="20%">Administrators</th>
+            <td width="60%">
+              {{ controls.edit_list("edit_administrators", administrators, "administrators") }}
+            </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Administrators</th>
+        <td width="60%"> {{controls.view_list(administrators)}}</td>
+        <td width="20%">
+          <a href="/admin/equipment/item/{{equipment_item.idstring}}/edit_administrators">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+      {% if edit_authorised %}
+      <tr>
+        <form class="form-group" action="/admin/equipment/item/{{equipment_item.idstring}}/edit_authorised" method="post">
+          <tr>
+            <th width="20%">Authorised Users</th>
+            <td width="60%">
+              {{ controls.edit_list("edit_authorised", authorised, "authorised") }}
+            </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Authorised Users</th>
+        <td width="60%"> {{controls.view_list(authorised)}}</td>
+        <td width="20%">
+          <a href="/admin/equipment/item/{{equipment_item.idstring}}/edit_authorised">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+      {% if edit_pending %}
+      <tr>
+        <form class="form-group" action="/admin/equipment/item/{{equipment_item.idstring}}/edit_pending" method="post">
+          <tr>
+            <th width="20%">Pending Users</th>
+            <td width="60%">
+              {{ controls.edit_list("edit_pending", pending, "pending") }}
+            </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Pending Users</th>
+        <td width="60%"> {{controls.view_list(pending)}}</td>
+        <td width="20%">
+          <a href="/admin/equipment/item/{{equipment_item.idstring}}/edit_pending">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+      {% if edit_banned %}
+      <tr>
+        <form class="form-group" action="/admin/equipment/item/{{equipment_item.idstring}}/edit_banned" method="post">
+          <tr>
+            <th width="20%">Banned Users</th>
+            <td width="60%">
+              {{ controls.edit_list("edit_banned", banned, "banned") }}
+            </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Banned Users</th>
+        <td width="60%"> {{controls.view_list(banned)}}</td>
+        <td width="20%">
+          <a href="/admin/equipment/item/{{equipment_item.idstring}}/edit_banned">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+      {% if edit_info %}
+      <tr>
+        <form class="form-group" action="/admin/equipment/item/{{equipment_item.idstring}}/edit_info" method="post">
+          <tr>
+            <th width="20%">Information</th>
+            <td width="60%">
+              {{ controls.edit_dictionary("edit_info", equipment_item.information_keys, 
+                                                       equipment_item.information, "information") }}
+            </td>
+            <td width="20%">
+              <button type="submit" class="btn btn-info">Update</button>
+            </td>
+          </tr>
+        </form>
+      </tr>
+      {% else %}
+      <tr>
+        <th width="20%">Information</th>
+        <td width="60%"> {{controls.view_dictionary(equipment_item.information_keys, 
+                                                    equipment_item.information)}}</td>
+        <td width="20%">
+          <a href="/admin/equipment/item/{{equipment_item.idstring}}/edit_info">
+            <button type="button" class="btn btn-default" aria-label="Left Align">
+              Edit
+            </button>
+          </a>         
+        </td>
+      </tr>
+      {% endif %}
+    </table>
+
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

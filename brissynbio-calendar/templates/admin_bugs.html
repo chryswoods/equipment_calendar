@@ -1,0 +1,86 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  <h3>Bugs</h3>
+  <form class="form-inline" action="/admin/bugs" method="get">
+    <div class="form-group">
+      <label for="range_start">View between</label>
+      <input type="text" value='{{range_start.strftime("%d %B %Y")}}' readonly class="picker_range_start form-control"/>
+      {{ datetime_pickers.addDatePicker("picker_range_start", "range_start") }}
+    </div>
+    <div class="form-group">
+      <label for="range_end">and</label>
+      <input type="text" value='{{range_end.strftime("%d %B %Y")}}' readonly class="picker_range_end form-control"/>
+      {{ datetime_pickers.addDatePicker("picker_range_end", "range_end") }}
+    </div>
+    <div class="form-group">
+      <label for="user">and user</label>
+      <input type="text" class="form-control" value="{{view_user}}" name="view_user" id="view_user"/>
+    </div>
+    <div class="form-group">
+      <div>
+        <button type="submit" class="btn btn-default">View</button>
+      </div>
+    </div>
+    <input type="hidden" id="range_start" name="range_start" value="{{range_start.strftime('%d-%m-%Y')}}" readonly />
+    <input type="hidden" id="range_end" name="range_end" value="{{range_end.strftime('%d-%m-%Y')}}" readonly /> 
+  </form>
+
+  {% if bugs %}
+    <form class="form-horizontal" action="/admin/bugs/delete_bugs" method="post">
+      <div class="form-group">
+         <div class="col-sm-offset-8 col-sm-2">
+           <div class="checkbox">
+             <label>
+               <input type="checkbox" onClick="toggle(this,'bugbox')">Select All</input>
+             </label>
+           </div>
+         </div>
+         <div class="col-sm-2 col-sm-2">
+           <button type="submit">Delete</button>
+         </div>
+      </div>
+
+      {{controls.view_bugs(bugs,"bugs","bugbox",really_delete,True,account_mapping)}}
+    </form>
+  {% else %}
+    <p>No bugs reported in this date range.</p>
+  {% endif %}
+
+  <hr/>
+
+  <div class="row container-fluid">
+    <div class="col-sm-2 col-xs-2">
+      <form action="/admin/bugs" method="get">
+        <input type="hidden" id="range_start" name="range_start" value="{{older_range_start.strftime('%d-%m-%Y')}}" />
+        <input type="hidden" id="range_end" name="range_end" value="{{older_range_end.strftime('%d-%m-%Y')}}" />
+        <input type="hidden" id="view_user" name="view_user" value="{{view_user}}" />
+        <button class="btn btn-default" type="submit">
+          <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Older
+        </button>
+      </form>
+    </div>
+    {% if newer_range_start < today_start %}
+      <div class="col-sm-2 col-xs-2">
+        <form action="/admin/bugs" method="get">
+          <input type="hidden" id="range_start" name="range_start" value="{{newer_range_start.strftime('%d-%m-%Y')}}" />
+          <input type="hidden" id="range_end" name="range_end" value="{{newer_range_end.strftime('%d-%m-%Y')}}" />
+          <input type="hidden" id="view_user" name="view_user" value="{{view_user}}" />
+          <button class="btn btn-default" type="submit">
+            Newer <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+          </button>
+        </form>
+      </div>
+    {% else %}
+      <div class="col-sm-2 col-xs-2">
+        <button class="btn btn-default" disabled="disabled">
+            Newer <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

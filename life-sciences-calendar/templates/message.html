@@ -1,0 +1,20 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  <div class="jumbotron">
+    <h1>{{header}}</h1>
+    {% if message_url %}
+    <a href="{{message_url}}">
+      {% for message in messages %}
+        <h3>{{message}}</h3>
+      {% endfor %}
+    </a>
+    {% else %}
+      {% for message in messages %}
+        <h3>{{message}}</h3>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

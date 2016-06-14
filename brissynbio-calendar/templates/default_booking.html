@@ -1,0 +1,125 @@
+{% import '/templates/controls.html' as controls %}
+{% autoescape false %}
+
+    <div class="panel-group" role="tablist" aria-multiselectable="true" id="message_view">
+      <div class="panel panel-info" > 
+        <div class="panel-heading container-fluid" role="tab" id="feedback_messages">
+          <div class="panel-title row">
+            <a class="text-muted"
+               data-toggle="collapse" aria-expanded="false" data-parent="#message_view" href="#collapse_messages"
+               aria-controls="collapse_messages">
+              <div class="col-sm-1 col-xs-1">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              </div>
+              <div class="col-sm-9 col-xs-9">                
+                <h3 class="panel-title">
+            <a href="/equipment/labs/{{item.laboratory}}">{{laboratory_mapping[item.laboratory]}}</a> 
+          | <a href="/equipment/types/{{item.equipment_type}}">{{type_mapping[item.equipment_type]}}</a> | 
+            <a href="/equipment/item/{{item.idstring}}">{{item.name}}</a>
+                </h3> 
+              </div>
+              <div class="col-sm-2 col-xs-2">                
+                <h3 class="panel-title">
+            <a class="text-muted"
+               data-toggle="collapse" aria-expanded="false" data-parent="#message_view" href="#collapse_messages"
+               aria-controls="collapse_messages">Need help?</a>
+                </h3>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        {% if has_error %}
+        <div id="collapse_messages" class="panel-collapse collapse in" role="tabpanel" 
+             aria-labelledby="feedback_messages">
+        {% else %}
+        <div id="collapse_messages" class="panel-collapse collapse" role="tabpanel" 
+             aria-labelledby="feedback_messages">
+        {% endif %}
+          <div class="panel-body">
+            <h4><a href="/feedback/report_problem?equipment={{item.idstring}}">Click here to 
+                report any problems, breakages or outages.</a></h4>
+
+
+           {% if item.constraints.booking_info %}
+             <p>{{item.constraints.booking_info.replace("\n","</p><p>")}}</p>
+           {% endif %}
+
+           {% if item.constraints %}
+             <ul><li>{{item.constraints.constraintsString().replace("\n","</li><li>")}}</li></ul>
+           {% endif %}
+
+           <p>To make a booking click on the "click me" next to "Start Time" to choose the starting
+              time for your booking, and then on the "click me" next to "End Time" to choose the end 
+              time of your booking. Then click "Book" to make your booking.</p>
+
+           <p>If the equipment is available, then you will then be taken to another screen to 
+              enter more information about the booking. Your booking will be reserved for sufficient
+              time for you to enter this information.</p>
+
+           <p>If the equipment is not available, or if there is something wrong with your chosen
+              time (e.g. you are booking too early in the morning or too late in the evening), then
+              you will see an error at the top of the screen and will have to choose another time.</p>
+
+           <p>Note that in some cases, your booking may need to be authorised by the equipment
+              owner before it is confirmed. If this is the case, this will be shown clearly, and the 
+              booking status will be listed as "Awaiting authorisation...".</p>
+
+           <p>Your booking is only confirmed if the booking status is listed as "Upcoming and authorised".</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form class="form-inline" action="/equipment/item/{{item.idstring}}/book" method="post">
+      {% if is_demo %}
+        <input type="hidden" id="is_demo" name="is_demo" value="1"/>
+      {% endif %}
+      <div class="form-group">
+        <label for="start_time">Start Time</label>
+        <input type="text" value="" placeholder="click me" readonly class="picker_starttime form-control" 
+               id="view_start_time" name="view_start_time">
+        {% if item.constraints %}
+          {% if item.constraints.bookByDate() %}
+            {{ datetime_pickers.addDatePicker("picker_starttime", "start_time", True,
+                                              disabled_days=item.constraints.daysOfWeekDisabled(is_start=True)) }}
+          {% else %}
+            {{ datetime_pickers.addDateTimePicker("picker_starttime", "start_time", True,
+                                                  disabled_days=item.constraints.daysOfWeekDisabled(is_start=True)) }}
+          {% endif %}
+        {% else %}
+          {{ datetime_pickers.addDateTimePicker("picker_starttime", "start_time", True) }}
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label for="end_time">End Time</label>
+        <input type="text" value="" placeholder="click me" readonly class="picker_endtime form-control" 
+               id="view_end_time" name="view_end_time">
+        {% if item.constraints %}
+          {% if item.constraints.bookByDate() %}
+            {{ datetime_pickers.addDatePicker("picker_endtime", "end_time", True,
+                                              disabled_days=item.constraints.daysOfWeekDisabled(is_end=True)) }}
+          {% else %}
+            {{ datetime_pickers.addDateTimePicker("picker_endtime", "end_time", True,
+                                                  disabled_days=item.constraints.daysOfWeekDisabled(is_end=True)) }}
+          {% endif %}
+        {% else %}
+          {{ datetime_pickers.addDateTimePicker("picker_endtime", "end_time", True) }}
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <input type="hidden" id="booking_user" name="booking_user" value="{{email}}"/>
+        <input type="hidden" id="booking_action" name="booking_action" value="start_booking"/>
+        <div>
+          <button type="submit" class="btn btn-default">Book</button>
+        </div>
+      </div>
+      <input type="hidden" id="start_time" name="start_time" readonly />
+      <input type="hidden" id="end_time" name="end_time" readonly />
+    </form>
+
+  {% if calendar_html %}
+    {{calendar_html}}
+  {% endif %}
+
+{% endautoescape %}

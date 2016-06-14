@@ -1,0 +1,51 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  {% if view_account %}
+    <table class="table table-hover">
+      <tr>
+        <th>Username</th>
+        <td>{{view_account.name}}</th>
+      </tr>
+      <tr>
+        <th>Email</th>
+        <td>{{view_account.email}}</td>
+      </tr>
+      <tr>
+        <th>Initials</th>
+        <td>{{view_account.initials}}</td>
+      </tr>
+      <tr>
+        <th>Information</th>
+        <td>{{view_account.intro_text}}</td>
+      </tr>
+      <tr>
+        <th>Default Project</th>
+        <td>{{view_account.default_project}}</td>
+      </tr>
+      <tr>
+        <th>Status</th>
+        <td>
+          {% if view_account.is_admin %}
+          Administrator
+          {% elif view_account.is_approved %}
+          User
+          {% else %}
+          Unapproved
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+
+    <p align="center">
+      <a href="/admin/users/revoke_access/{{view_account.email}}">
+        <button type="button" class="btn btn-danger" aria-label="Left Align">
+          Revoke Access (disable account!)
+        </button>
+      </a>
+    </p>
+
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

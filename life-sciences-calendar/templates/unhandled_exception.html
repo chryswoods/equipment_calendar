@@ -1,0 +1,70 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  <div class="panel panel-danger">
+    <div class="panel-heading"> <h1>Something went wrong!</h1> </div>
+    <div class="panel-body">
+      {% if exception %}
+        {% if exception.message %}
+          <h3>{{exception.__class__.__name__}}: {{exception.message}}</h3>
+        {% else %}
+          <h3>{{exception}}</h3>
+        {% endif %}
+        {% if backtrace or exception.json or exception.detail %}
+          <p>
+            <a class="btn btn-default" data-toggle="collapse" href="#collapseBox"
+               aria-expanded="false" aria-controls="collaseBox">More information...</a>
+            <div class="collapse" id="collapseBox">
+              <div class="well">
+                <h4>Bug ID = {{bug_id}}</h4>
+                {% if exception.json %}
+                  <h4>API response from server</h4>
+                  <pre>{{exception.json}}</pre>
+                {% endif %}
+                {% if exception.detail %}
+                  <h4>Additional information about the error</h4>
+                  <pre>{{exception.detail}}</pre>
+                {% endif %}
+                {% if backtrace %}
+                  <h4>Backtrace</h4>
+                  <pre>{{backtrace}}</pre>
+                {% endif %}
+              </div>
+            </div>
+          </p>
+        {% endif %}
+
+        <hr/>
+
+        {% if bug_id %}
+          <p>Information about this error has already been recorded and sent to 
+             the administrators. They will use this to try and understand this bug
+             and fix any problems. 
+          </p>
+
+          <p>If you would like to add any more information
+             about this error please do so in the text box here and click
+             "Add Information"</p>
+          <p>
+             Enter extra information could include what were you trying to do, whether the website appeared to be slow, 
+             or anything you noticed that was strange or out of the ordinary.
+          </p>
+
+          <form class="form-group" action="/feedback/report_bug" method="post">
+                <input type="hidden" id="bug_id" name="bug_id" value="{{bug_id}}"/>
+                <textarea cols="80" rows="4" class="form-control" id="user_info" 
+                          name="user_info" 
+                          required="true"></textarea>
+                <button type="submit" class="btn btn-default">Add Information</button>          
+          </form>
+        {% else %}
+          <p>As your account has not yet been approved, information about this bug has not been recorded.
+             Please <a href="mailto:lifesciences.equipment@gmail.com">email the administrators</a> 
+             if you are encountering problems that are preventing you from signing up to this service.</p>
+        {% endif %}
+     {% endif %}
+    </div>
+  </div>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

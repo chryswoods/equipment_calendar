@@ -1,0 +1,51 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr class="info">
+        <th>User</th>
+        <th>Email</th>
+        <th>Initials</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for account in accounts %}
+        {% if account.is_admin %}
+          <tr id="admin_account" class="success" 
+              onclick="window.document.location='/admin/users/view/{{account.email}}';">
+        {% elif account.is_approved %}
+          <tr id="approved_account"
+              onclick="window.document.location='/admin/users/view/{{account.email}}';">
+        {% else %}
+          <tr id="unapproved_account" class="warning"
+              onclick="window.document.location='/admin/users/view/{{account.email}}';">
+        {% endif %}
+            <td>{{ account.name }}</td>
+            <td>{{ account.email }}</td> 
+            <td>{{ account.initials }}</td>
+            <td>
+              {% if not account.is_approved %}
+                <a href="/admin/users/approve/{{account.email}}">
+                  <button type="button" class="btn btn-warning">Approve Account</button>
+                </a>
+              {% else %}
+                {% if account.is_admin %}
+                  <a href="/admin/users/revoke_admin/{{account.email}}">
+                    <button type="button" class="btn btn-danger">Revoke Admin Rights</button>
+                  </a>
+                {% else %}
+                  <a href="/admin/users/grant_admin/{{account.email}}">
+                    <button type="button" class="btn btn-success">Give Admin Rights</button>
+                  </a>
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

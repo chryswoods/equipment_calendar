@@ -1,0 +1,729 @@
+
+{% macro combo_list(items, id, prompt=None, clas=None) -%}
+  {% if items %}
+    <select class="form-control" name="{{id}}" id="{{id}}" class="{{clas}}">
+      {% if prompt %}
+        <option value="{{prompt[1]}}">{{prompt[0]}}</option>
+        <option value="None" disabled="true">--------</option>
+      {% else %}
+        <option value="None">Choose...</option>
+      {% endif %}
+      {% for item in items %}
+        <option value="{{item[1]}}">{{item[0]}}</option>
+      {% endfor %}
+    </select>
+  {% else %}
+    <p>No available options...</p>
+  {% endif %}
+{%- endmacro %}
+
+{% macro view_text(text) -%}
+    {% if text %}
+    {{text}}
+    {% endif %}
+{%- endmacro %}
+
+{% macro edit_textarea(text, id, rows=3) -%}
+   <div class="input-group">
+     {% if text %}
+       <textarea class="form-control" style="width:100%" id="{{id}}" rows="{{rows}}" name="{{id}}">{{text}}</textarea>
+     {% else %}
+       <textarea class="form-control" style="width:100%" id="{{id}}" rows="{{rows}}" name="{{id}}"></textarea>
+     {% endif %}
+   </div>
+{%- endmacro %}
+
+{% macro edit_text(text, id) -%}
+   <div class="input-group">
+     {% if text %}
+       <input type="text" class="form-control" id="{{id}}" name="{{id}}" placeholder="Type here..." value="{{text}}" required></input>
+     {% else %}
+       <input type="text" class="form-control" id="{{id}}" name="{{id}}" placeholder="Type here..." required></input>
+     {% endif %}
+   </div>
+{%- endmacro %}
+
+{% macro edit_bool(bool, id) -%}
+  <div class="input-group">
+    <select name="{{id}}" id="{{id}}">
+      {% if bool %}
+        <option value="True">Yes</option>
+        <option value="False">No</option>
+      {% else %}
+        <option value="False">No</option>
+        <option value="True">Yes</option>
+      {% endif %}
+    </select>
+  </div>
+{%- endmacro %}
+
+{% macro view_bool(bool) -%}
+  {% if bool %}
+    Yes
+  {% else %}
+    No
+  {% endif %}
+{%- endmacro %}
+
+{% macro view_list(list) -%}
+    {% if list %}
+      {% for item in list %}
+        <p>{{item}}</p>
+      {% endfor %}
+    {% endif %}
+{%- endmacro %}
+
+{% macro edit_list(url, list, id, placeholder='') -%}
+    {% if list %}
+      {% for item in list %}
+        <div class="input-group">
+          <input type="text" class="form-control" id="{{id}}_{{loop.index}}"
+                 name="{{id}}_{{loop.index}}" value="{{item}}"></input>
+          <input class="bsb-hidden-submit" type="submit" tabindex="-1"/>
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="submit" formaction="{{url}}/remove_{{loop.index}}">
+              <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+            </button>
+          </span>
+        </div>
+      {% endfor %}
+    {% endif %}
+    <div class="input-group">
+      <input type="text" class="form-control" id="{{id}}_new"
+             name="{{id}}_add" placeholder="{{placeholder}}"></input>
+      <input class="bsb-hidden-submit" type="submit" formaction="{{url}}/add" tabindex="-1"/>
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="submit">
+          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        </button>
+      </span>    
+    </div>
+{%- endmacro %}
+
+{% macro view_location(location) -%}
+    {% if location %}
+    <div class="input-group">
+      <span class="input-group-addon" id="basic-addon1">Lattitude</span>
+      <label type="text" class="form-control" id="{{id}}_lattitude"
+            name="{{id}}_lattitude" value="{{location.lat}}">{{location.lat}}</label>
+      <span class="input-group-addon" id="basic-addon1">Longitude</span>
+      <label type="text" class="form-control" id="{{id}}_longitude"
+            name="{{id}}_longitude" value="{{location.lon}}">{{location.lon}}</label>
+    </div>
+    {% endif %}
+{%- endmacro %}
+
+{% macro edit_location(location, id) -%}
+    <div class="input-group">
+      <span class="input-group-addon" id="basic-addon1">Lattitude</span>
+      <input type="text" class="form-control" id="{{id}}_lattitude"
+            name="{{id}}_lattitude" value="{{location.lat}}"></input>
+      <span class="input-group-addon" id="basic-addon1">Longitude</span>
+      <input type="text" class="form-control" id="{{id}}_longitude"
+            name="{{id}}_longitude" value="{{location.lon}}"></input>
+    </div>
+{%- endmacro %}
+
+{% macro drawBackForwardButton() -%}
+  <span>
+    <button class="btn btn-default" onclick="goBack()">
+      <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back
+    </button>
+    <button class="btn btn-default" onclick="goForward()">
+      <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Forward
+    </button>
+  </span>
+{%- endmacro %}
+
+{% macro view_dictionary(keys, dictionary) -%}
+    {% if keys %}
+    <table width="100%">
+      {% for key in keys %}
+        <tr>
+          <td width="25%">
+            <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1">Key</span>
+              <label type="text" class="form-control" id="key_{{loop.index}}"
+                     name="key_{{loop.index}}" value="{{key}}">{{key}}</label>
+            </div>
+          </td>
+          <td width="75%">
+            <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1">Value</span>
+              <label type="text" class="form-control" id="value_{{loop.index}}"
+                     name="value_{{loop.index}}" value="{{dictionary[key]}}">{{dictionary[key]}}</label>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+    {% endif %}
+{%- endmacro %}
+
+{% macro edit_dictionary(url, keys, dictionary, id) -%}
+    <table width="100%">
+      {% for key in keys %}
+        <tr>
+          <td width="25%">
+            <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1">Key</span>
+              <input type="text" class="form-control" id="{{id}}_key_{{loop.index}}"
+                     name="{{id}}_key_{{loop.index}}" value="{{key}}"></input>
+            </div>
+          </td>
+          <td width="75%">
+            <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1">Value</span>
+              <input type="text" class="form-control" id="{{id}}_value_{{loop.index}}"
+                     name="{{id}}_value_{{loop.index}}" value="{{dictionary[key]}}"></input>
+              <input class="bsb-hidden-submit" type="submit" tabindex="-1"/>
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit" formaction="{{url}}/remove_{{loop.index}}">
+                  <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                </button>
+              </span>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      <tr>
+        <td width="25%">
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">Key</span>
+            <input type="text" class="form-control" id="{{id}}_key_add"
+                   name="{{id}}_key_add" placeholder="Key..."></input>
+          </div>
+        </td>
+        <td width="75%">
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">Value</span>
+            <input type="text" class="form-control" id="{{id}}_value_add"
+                   name="{{id}}_value_add" placeholder="Value..."></input>
+            <input class="bsb-hidden-submit" type="submit" tabindex="-1"/>
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="submit" formaction="{{url}}/add">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              </button>
+            </span>
+          </div>
+        </td>
+      </tr>
+    </table>
+{%- endmacro %}
+
+{% macro view_datetime(datetime) -%}
+  {% if datetime %}
+    <datetime>{{localise_time(datetime).strftime("%a %d %B %Y, %I:%M %p").replace(" 0"," ")}}</datetime>
+  {% else %}
+    <datetime>Unknown</datetime>
+  {% endif %}
+{%- endmacro %}
+
+{% macro view_account(email, account_mapping, name_only=False) -%}
+  {% if account_mapping and email in account_mapping %}
+    {% if name_only %}
+      <a href="/account/view/{{email}}">{{account_mapping[email]}}</a>
+    {% else %}
+      <a href="/account/view/{{email}}">{{account_mapping[email]}} ({{email}})</a>
+    {% endif %}
+  {% else %}
+    <a href="/account/view/{{email}}">{{email}}</a>
+  {% endif %}
+{%- endmacro %}
+
+{% macro view_equipment(item) -%}
+  {% if item %}
+    <a href="/equipment/labs/{{item.getLaboratoryID()}}">{{item.getLaboratoryName()}}</a> |
+    <a href="/equipment/types/{{item.getEquipmentTypeID()}}">{{item.getEquipmentTypeName()}}</a> |
+    <a href="/equipment/item/{{item.idstring}}">{{item.name}}</a>
+  {% endif %}
+{%- endmacro %}
+
+{% macro short_text(text, size=20) -%}
+  {% if text.count("") <= size %}
+    {{text}}
+  {% else %}
+    {{text[0:size].rstrip()}}...
+  {% endif %}
+{%- endmacro %}
+
+{% macro toDaysHoursMinutes(minutes, text="none") -%}
+{% if minutes %}
+{% set days = (minutes / 1440)|int %}
+{% set hours = ((minutes % 1440) / 60)|int %}
+{% set minutes = ((minutes % 1440) % 60)|int %}
+{% if days %}{{days}}d {% endif %}
+{% if hours %}{{hours}}h {% endif %}
+{% if minutes %}{{minutes}}m{% endif %}
+{% else %}
+{{text}}
+{% endif %}
+{%- endmacro %}
+
+{% macro view_feedback(feedbacks, viewid="feedback_view", toggleid="feedback_box", 
+                       hide_resolved=False, can_delete=False, 
+                       account=None, account_mapping=None, discussion_link=True, force_close=False,
+                       short_form=True) -%}
+  {% if feedbacks %}
+  <div class="panel-group" id="{{viewid}}" role="tablist" aria-multiselectable="true">
+    {% for feedback in feedbacks %}
+      {% if not (hide_resolved and feedback.is_resolved) %}
+        {% set item = feedback.getEquipment() %}
+
+        <div class="panel panel-{{feedback.severity()}}">
+          <div class="panel-heading container-fluid" role="tab" id="feedback_{{feedback.feedback_id}}">
+              <div class="panel-title row">
+                <a class="text-muted"
+                   data-toggle="collapse" aria-expanded="false" data-parent="#{{viewid}}" href="#collapse_{{feedback.feedback_id}}"
+                   aria-controls="collapse_{{feedback.feedback_id}}">
+                  <div class="col-sm-1 col-xs-1">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                  </div>
+                  <div class="col-sm-10 col-xs-10">                
+                    <a style="color:#222222" href="/feedback/view/{{feedback.feedback_id}}">
+                      <h3 class="panel-title">
+                        {% if feedback.is_resolved %}
+                          [CLOSED] - 
+                        {% endif %}
+                        {% if item %}
+                          {{view_equipment(item)}} | {{feedback.user_info}}
+                        {% else %}
+                          {{feedback.description()}}
+                        {% endif %}
+                      </h3> 
+                    </a>
+                  </div>
+                </a>
+                {% if can_delete %}
+                  <span class="col-sm-1 col-xs-1">
+                    <input type="checkbox" name="{{toggleid}}" value="{{feedback.feedback_id}}"/>
+                  </span>
+                {% endif %}
+              </div>
+          </div> <!-- panel heading -->
+
+          {% if (not force_close) and loop.length == 1 %}
+          <div id="collapse_{{feedback.feedback_id}}" class="panel-collapse collapse in" role="tabpanel" 
+                   aria-labelledby="heading_{{feedback.feedback_id}}">
+          {% else %}
+          <div id="collapse_{{feedback.feedback_id}}" class="panel-collapse collapse" role="tabpanel" 
+                   aria-labelledby="heading_{{feedback.feedback_id}}">
+          {% endif %}
+            <div class="panel-body container-fluid">
+              {% if not short_form %}
+                {% if item %}
+                  <div class="row">
+                     <div class="col-md-2 col-sm-3 col-xs-4"><strong>Title</strong></div>
+                     <div class="col-md-10 col-sm-9 col-xs-8">{{view_equipment(item)}} | 
+                           {{feedback.user_info}}</div>
+                  </div>
+                {% else %}
+                  <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-4"><strong>Title</strong></div>
+                    <div class="col-md-10 col-sm-9 col-xs-8">{{feedback.user_info}}</div>
+                  </div>
+                {% endif %}
+
+                <div class="row">
+                  <div class="col-md-2 col-sm-3 col-xs-4"><strong>Created by</strong></div>
+                  <div class="col-md-10 col-sm-9 col-xs-8">{{view_account(feedback.email,account_mapping)}}</div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-2 col-sm-3 col-xs-4"><strong>Created on</strong></div>
+                  <div class="col-md-10 col-sm-9 col-xs-8">{{view_datetime(feedback.report_time)}}</div>
+                </div>
+
+                {% if feedback.is_resolved %}
+                  <hr/>
+                  <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-4"><strong>Resolved by</strong></div>
+                    <div class="col-md-10 col-sm-9 col-xs-8">{{view_account(feedback.resolved_email,account_mapping)}}</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-4"><strong>Resolved on</strong></div>
+                    <div class="col-md-10 col-sm-9 col-xs-8">{{view_datetime(feedback.resolved_time)}}</div>
+                  </div>
+                {% endif %}
+              {% endif %}
+
+              {% if discussion_link %}
+                {% if not short_form %}
+                  <hr/>
+                {% endif %}
+
+                {% if feedback.messages %}
+                  <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-4">
+                      Latest message by<br/>{{ view_account(feedback.messages[-1].email,account_mapping,name_only=True) }}<br/>
+                      <small><datetime>{{localise_time(feedback.messages[-1].message_time).strftime("%d %B %Y, %I:%M %p").replace(" 0"," ")}}</datetime></small>
+                    </div>
+                    <div class="col-md-10 col-sm-9 col-xs-8">
+                      <div class="well">{{feedback.messages[-1].message}}</div>
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if feedback.is_resolved %}
+                  <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-4"></div>
+                    <div class="col-md-10 col-sm-9 col-xs-8">
+                      <a href="/feedback/view/{{feedback.feedback_id}}">View a record of the discussion</a>
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-4"></div>
+                    <div class="col-md-10 col-sm-9 col-xs-8">
+                      <a href="/feedback/view/{{feedback.feedback_id}}">View or join the discussion</a>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+
+            </div> <!-- panel body -->
+          </div> <!-- panel-collapse -->
+        </div> <!-- panel -->
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro view_bugs(bugs, viewid="bugs_view", toggleid="bugbox", really_delete=None, 
+                   can_delete=False, account_mapping=None) -%}
+  {% if bugs %}
+  <div class="panel-group" id="{{viewid}}" role="tablist" aria-multiselectable="true">
+    {% for bug in bugs %}
+      <div class="panel panel-warning"> 
+        <div class="panel-heading container-fluid" role="tab" id="bug_{{bug.bug_id}}">
+          <div class="panel-title row">
+            <a class="text-muted"
+               data-toggle="collapse" aria-expanded="false" data-parent="#{{viewid}}" href="#collapse_{{bug.bug_id}}"
+               aria-controls="collapse_{{bug.bug_id}}">
+              <div class="col-sm-1 col-xs-1">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              </div>
+              <div class="col-sm-10 col-xs-10">                
+                <h3 class="panel-title">{{short_text(bug.etype,30)}} | {{short_text(bug.description,50)}}</h3> 
+              </div>
+            </a>
+            {% if can_delete %}
+              <span class="col-sm-1 col-xs-1">
+                <input type="checkbox" name="{{toggleid}}" value="{{bug.bug_id}}"/>
+              </span>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if can_delete and really_delete and (really_delete == bug.bug_id) %}
+          <div id="collapse_{{bug.bug_id}}" class="panel-collapse collapse in" role="tabpanel" 
+               aria-labelledby="heading_{{bug.bug_id}}">
+        {% else %}
+          <div id="collapse_{{bug.bug_id}}" class="panel-collapse collapse" role="tabpanel" 
+               aria-labelledby="heading_{{bug.bug_id}}">
+        {% endif %}
+            <div class="panel-body container-fluid">
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>ID</strong></div>
+                <div class="col-sm-2 col-xs-2">{{bug.bug_id}}</div>
+                {% if can_delete %}
+                  {% if really_delete == bug.bug_id %}
+                    <div class="col-sm-1 col-xs-1 bg-danger">
+                      <a href="/admin/feedback/delete_bug?bug_id={{bug.bug_id}}">
+                        DELETE!
+                      </a>
+                    </div>
+                  {% else %}
+                    <div class="col-sm-1 col-xs-1 bg-warning">
+                      <a href="{{current_url}}?really_delete={{bug.bug_id}}">
+                        Delete?
+                      </a>
+                    </div>
+                  {% endif %}
+                {% endif %}
+              </div>
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>Report Time</strong></div>
+                <div class="col-sm-10 col-xs-10">{{view_datetime(bug.report_time)}}</div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>User</strong></div>
+                <div class="col-sm-10 col-xs-10">{{view_account(bug.email,account_mapping)}}</div>
+              </div>
+
+              {% if bug.user_info %}
+                <div class="row">
+                  <div class="col-sm-2 col-xs-2"><strong>User Info</strong></div>
+                  <div class="col-sm-10 col-xs-10"><pre>{{bug.user_info}}</pre></div>
+                </div>
+              {% endif %} 
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>Error Class</strong></div>
+                <div class="col-sm-10 col-xs-10">{{bug.etype}}</div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>Message</strong></div>
+                <div class="col-sm-10 col-xs-10">{{bug.description}}</div>
+              </div>
+
+              {% if bug.detail %}
+                <div class="row">
+                  <div class="col-sm-2 col-xs-2"><strong>Detail</strong></div>
+                  <div class="col-sm-10 col-xs-10"><pre>{{bug.detail}}</pre></div>
+                </div>
+              {% endif %}
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>Backtrace</strong></div>
+                <div class="col-sm-10 col-xs-10"><pre>{{bug.backtrace}}</pre></div>
+              </div>
+            </div> <!-- panel body -->
+          </div> <!-- panel-collapse -->
+        </div> <!-- panel -->
+    {% endfor %}
+  </div> <!-- panel-group -->
+  {% endif %}
+{%- endmacro %}
+
+{% macro view_bookings(bookings, viewid="booking_view", really_cancel=None, account_mapping=None) -%}
+  {% if bookings %}
+  <div class="panel-group" id="{{viewid}}" role="tablist" aria-multiselectable="true">
+    {% for booking in bookings %}
+      {% if booking.isActive() %}
+        <div class="panel panel-success">
+      {% elif booking.isPast() %}
+        <div class="panel panel-warning">
+      {% elif booking.isCancelled() %}
+        <div class="panel panel-danger">
+      {% elif not booking.isConfirmed() %}
+        <div class="panel panel-primary">
+      {% else %}
+        <div class="panel panel-info">
+      {% endif %}
+          <div class="panel-heading container-fluid" role="tab" id="heading_{{booking.idString()}}">
+            <div class="panel-title row">
+              <a class="text-muted"
+                 data-toggle="collapse" aria-expanded="false" data-parent="#{{viewid}}" href="#collapse_{{booking.idString()}}"
+                 aria-controls="collapse_{{booking.idString()}}">
+                <div class="col-md-1 col-sm-1 col-xs-1">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </div>
+              </a>
+              <div class="col-md-9 col-sm-8 col-xs-7">                
+                <h3 class="panel-title">
+                  <a href="/equipment/item/{{booking.getEquipmentID()}}/view_booking?reservation={{booking.booking_id}}">
+                      {{view_datetime(booking.start_time)}}</a> [
+                  <a href="/equipment/labs/{{booking.getLaboratoryID()}}">{{booking.getLaboratoryName()}}</a> | 
+                  <a href="/equipment/types/{{booking.getTypeID()}}">{{booking.getTypeName()}}</a> |
+                  <a href="/equipment/item/{{booking.getEquipmentID()}}">{{booking.getEquipmentName()}}</a> ]
+                </h3>
+              </div>
+            </div>
+          </div>
+          {% if (really_cancel and (really_cancel == booking.idString())) or loop.length == 1 %}
+          <div id="collapse_{{booking.idString()}}" class="panel-collapse collapse in" role="tabpanel" 
+               aria-labelledby="heading_{{booking.idString()}}">
+          {% else %}
+          <div id="collapse_{{booking.idString()}}" class="panel-collapse collapse" role="tabpanel" 
+               aria-labelledby="heading_{{booking.idString()}}">
+          {% endif %}
+            <div class="panel-body container-fluid">
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Start Time</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{view_datetime(booking.start_time)}}</div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>End Time</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{view_datetime(booking.end_time)}}</div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Project</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{booking.getProjectName()}}</div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Status</strong></div>
+                {% if booking.isCancelled() %}
+                  <div class="col-md-10 col-sm-9 col-xs-8">Cancelled</div>
+                {% elif booking.isDeniedAuthorisation() %}
+                  <div class="col-md-10 col-sm-9 col-xs-8"><strong>Cancelled by admin</strong></div>
+                {% elif booking.isPast() %}
+                  {% if booking.isReserved() %}
+                    <div class="col-md-10 col-sm-9 col-xs-8">Never confirmed</div>
+                  {% else %}
+                    <div class="col-md-10 col-sm-9 col-xs-8">Completed</div>
+                  {% endif %}
+                {% elif booking.isReserved() %}
+                  <div class="col-md-8 col-sm-7 col-xs-6">
+                     <a href="/equipment/item/{{booking.equipment}}/book?booking_action=resume_booking&reservation={{booking.booking_id}}">
+                       Needs confirming
+                     </a>
+                  </div>
+                  {% if really_cancel == booking.idString() %}
+                    <div class="col-md-2 col-sm-2 col-xs-2 bg-danger">
+                      <a href="/equipment/bookings/cancel?equipment={{booking.equipment}}&reservation={{booking.booking_id}}">
+                        CANCEL!
+                      </a>
+                    </div>
+                  {% else %}
+                    <div class="col-md-2 col-sm-2 col-xs-2 bg-warning">
+                      <a href="{{current_url}}?really_cancel={{booking.idString()}}">
+                        Cancel?
+                      </a>
+                    </div>
+                  {% endif %}
+                {% else %}
+                  {% if booking.isActive() %}
+                    <div class="col-md-8 col-sm-7 col-xs-6">Active</div>
+                  {% elif booking.isPendingAuthorisation() %}
+                    <div class="col-md-8 col-sm-7 col-xs-6">Awaiting authorisation...</div>
+                  {% else %}
+                    <div class="col-md-8 col-sm-7 col-xs-6">Upcoming and authorised</div>
+                  {% endif %}
+                  {% if really_cancel == booking.idString() %}
+                    <div class="col-md-2 col-sm-2 col-xs-2 bg-danger">
+                      <a href="/equipment/bookings/cancel?equipment={{booking.equipment}}&reservation={{booking.booking_id}}">
+                        CANCEL!
+                      </a>
+                    </div>
+                  {% else %}
+                    <div class="col-md-2 col-sm-2 col-xs-2 bg-warning">
+                      <a href="{{current_url}}?really_cancel={{booking.idString()}}">
+                        Cancel?
+                      </a>
+                    </div>
+                  {% endif %}
+                {% endif %}
+              </div> <!-- row -->
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">
+                  <a href="/equipment/item/{{booking.equipment}}/view_booking?reservation={{booking.booking_id}}">
+                    View details...
+                  </a>
+                </div>
+              </div>
+
+            </div> <!-- panel body -->
+          </div> <!-- panel-collapse -->
+        </div> <!-- panel -->
+    {% endfor %}
+  </div> <!-- panel-group -->
+  {% endif %}
+{%- endmacro %}
+
+{% macro admin_view_bookings(bookings, viewid="booking_view", account_mapping=None) -%}
+  {% if bookings %}
+  <div class="panel-group" id="{{viewid}}" role="tablist" aria-multiselectable="true">
+    {% for booking in bookings %}
+      {% if booking.isActive() %}
+        <div class="panel panel-success">
+      {% elif booking.isPast() %}
+        <div class="panel panel-warning">
+      {% elif booking.isCancelled() %}
+        <div class="panel panel-danger">
+      {% elif not booking.isConfirmed() %}
+        <div class="panel panel-primary">
+      {% else %}
+        <div class="panel panel-info">
+      {% endif %}
+          <div class="panel-heading container-fluid" role="tab" id="heading_{{booking.idString()}}">
+            <div class="panel-title row">
+              <a class="text-muted"
+                 data-toggle="collapse" aria-expanded="false" data-parent="#{{viewid}}" href="#collapse_{{booking.idString()}}"
+                 aria-controls="collapse_{{booking.idString()}}">
+                <div class="col-md-1 col-sm-1 col-xs-1">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </div>
+              </a>
+              <div class="col-md-9 col-sm-8 col-xs-7">                
+                <h3 class="panel-title">
+                  &lt;{{view_account(booking.email,account_mapping)}}&gt;
+                  <a href="/equipment/item/{{booking.getEquipmentID()}}/view_booking?reservation={{booking.booking_id}}">
+                      {{view_datetime(booking.start_time)}}</a> [
+                  <a href="/equipment/labs/{{booking.getLaboratoryID()}}">{{booking.getLaboratoryName()}}</a> | 
+                  <a href="/equipment/types/{{booking.getTypeID()}}">{{booking.getTypeName()}}</a> |
+                  <a href="/equipment/item/{{booking.getEquipmentID()}}">{{booking.getEquipmentName()}}</a> ]
+                </h3>
+              </div>
+            </div>
+          </div>
+          {% if loop.length == 1 %}
+          <div id="collapse_{{booking.idString()}}" class="panel-collapse collapse in" role="tabpanel" 
+               aria-labelledby="heading_{{booking.idString()}}">
+          {% else %}
+          <div id="collapse_{{booking.idString()}}" class="panel-collapse collapse" role="tabpanel" 
+               aria-labelledby="heading_{{booking.idString()}}">
+          {% endif %}
+            <div class="panel-body container-fluid">
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>User</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{view_account(booking.email,account_mapping)}}</div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Start Time</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{view_datetime(booking.start_time)}}</div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>End Time</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{view_datetime(booking.end_time)}}</div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Project</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{booking.getProjectName()}}</div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Status</strong></div>
+                {% if booking.isCancelled() %}
+                  <div class="col-md-10 col-sm-9 col-xs-8">Cancelled</div>
+                {% elif booking.isDeniedAuthorisation() %}
+                  <div class="col-md-10 col-sm-9 col-xs-8"><strong>Cancelled by admin</strong></div>
+                {% elif booking.isPast() %}
+                  {% if booking.isReserved() %}
+                    <div class="col-md-10 col-sm-9 col-xs-8">Never confirmed</div>
+                  {% else %}
+                    <div class="col-md-10 col-sm-9 col-xs-8">Completed</div>
+                  {% endif %}
+                {% elif booking.isReserved() %}
+                  <div class="col-md-8 col-sm-7 col-xs-6">Needs confirming</div>
+                {% else %}
+                  {% if booking.isActive() %}
+                    <div class="col-md-8 col-sm-7 col-xs-6">Active</div>
+                  {% elif booking.isPendingAuthorisation() %}
+                    <div class="col-md-8 col-sm-7 col-xs-6">Awaiting authorisation...</div>
+                  {% else %}
+                    <div class="col-md-8 col-sm-7 col-xs-6">Upcoming and authorised</div>
+                  {% endif %}
+                {% endif %}
+              </div> <!-- row -->
+
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">
+                  <a href="/equipment/item/{{booking.equipment}}/view_booking?reservation={{booking.booking_id}}">
+                    View details...
+                  </a>
+                </div>
+              </div>
+
+            </div> <!-- panel body -->
+          </div> <!-- panel-collapse -->
+        </div> <!-- panel -->
+    {% endfor %}
+  </div> <!-- panel-group -->
+  {% endif %}
+{%- endmacro %}

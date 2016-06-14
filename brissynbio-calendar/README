@@ -1,0 +1,33 @@
+This is the web application that will be used to schedule
+and monitor usage of all BrisSynBio equipment
+
+This is being built to be run from and use the resources
+held by the google account brissynbio.equipment@gmail.com
+
+The local_client_secrets.py contains sensitive password
+and user account data that MUST NOT be uploaded to a 
+publicly visible server.
+
+To deploy an update to this software type
+
+appcfg.py --oauth2 update .
+
+This will upload the application so that it is available
+at the address
+
+http://starry-iris-830.appspot.com
+
+================
+
+To push / pull to google git you need to authenticate with gcloud, e.g.
+
+gcloud auth login
+
+(this will log you in via a browser)
+
+then ensure that you set the gcloud.sh as an authenticator for git, e.g.
+
+git config credential.helper gcloud.sh
+
+Then git pull and git push should work
+

@@ -1,0 +1,202 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+          <div class="panel-heading container-fluid" role="tab" id="heading_{{booking.idString()}}">
+            <div class="row">
+              <a class="text-muted"
+                 data-toggle="collapse" data-parent="#booking_view" href="#{{booking.idString()}}"
+                 aria-expanded="false" aria-controls="{{booking.idString()}}">
+                <div class="col-sm-1 col-xs-1">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true">
+                </div>
+              </a>
+              <div class="col-sm-9 col-xs-9">                
+                <h3 class="panel-title">Booking [
+                  <a href="/equipment/labs/{{booking.getLaboratoryID()}}">{{booking.getLaboratoryName()}}</a> | 
+                  <a href="/equipment/types/{{booking.getTypeID()}}">{{booking.getTypeName()}}</a> |
+                  <a href="/equipment/item/{{booking.getEquipmentID()}}">{{booking.getEquipmentName()}}</a> | {{booking.booking_id}}]</h3></span>
+              </div>
+              <div class="col-sm-1 col-xs-1">
+               {% if booking.isActive() %}
+                 Active
+               {% elif booking.isPast() %}
+                 Completed
+               {% elif booking.isCancelled() %}
+                 Cancelled
+               {% elif not booking.isConfirmed() %}
+                 <a href="/equipment/item/{{booking.equipment}}/confirm?reservation={{booking.booking_id}}"
+                    class="bg-danger">
+                   CONFIRM?
+                 </a>
+               {% else %}
+                 Upcoming
+               {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div id="{{booking.idString()}}" class="panel-collapse collapse in" role="tabpanel" 
+               aria-labelledby="heading_{{booking.idString()}}">
+            <div class="panel-body container-fluid">
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>Start Time</strong></div>
+                <div class="col-sm-10 col-xs-10">{{view_datetime(booking.start_time)}}</div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>End Time</strong></div>
+                <div class="col-sm-10 col-xs-10">{{view_datetime(booking.end_time)}}</div>
+              </div>
+
+              {% for info in booking.information | dictsort %}
+                <div class="row">
+                  <div class="col-sm-2 col-xs-2"><strong class="text-capitalize">{{info[0]}}</strong></div>
+                  <div class="col-sm-10 col-xs-10">{{info[1]}}</div>
+                </div>
+              {% endfor %}
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>Status</strong></div>
+                {% if booking.isCancelled() %}
+                  <div class="col-sm-2 col-xs-2 bg-danger">Cancelled</div>
+                {% elif booking.isReserved() %}
+                  <div class="col-sm-2 col-xs-2 bg-warning">
+                     <a href="/equipment/item/{{booking.equipment}}/confirm?reservation={{booking.booking_id}}">
+                       Needs confirming
+                     </a>
+                  </div>
+                {% elif booking.isPast() %}
+                  <div class="col-sm-2 col-xs-2 bg-warning">Completed</div>
+                {% else %}
+                  {% if booking.isActive() %}
+                    <div class="col-sm-2 col-xs-2 bg-success">Active</div>
+                  {% else %}
+                    <div class="col-sm-2 col-xs-2 bg-info">Upcoming</div>
+                  {% endif %}
+                  {% if really_cancel == booking.idString() %}
+                    <div class="col-sm-2 col-xs-2 bg-danger">
+                      <a href="/equipment/item/{{booking.equipment}}/cancel?reservation={{booking.booking_id}}">
+                        CANCEL
+                      </a>
+                    </div>
+                  {% else %}
+                    <div class="col-sm-2 col-xs-2 bg-warning">
+                      <a href="{{current_url}}?really_cancel={{booking.idString()}}">
+                        Cancel
+                      </a>
+                    </div>
+                  {% endif %}
+                {% endif %}
+              </div> <!-- row -->
+
+            </div> <!-- panel body -->
+          </div> <!-- panel-collapse -->
+        </div> <!-- panel -->
+
+{% autoescape false %}
+
+  {{ controls.view_bookings( [booking ] ) }}
+
+  {% if booking %}
+    <div class="panel-group" id="booking_view" role="tablist" aria-multiselectable="true">
+      <booking>
+        {% if booking.isActive() %}
+          <div class="panel panel-success">
+        {% elif booking.isPast() %}
+          <div class="panel panel-warning">
+        {% elif booking.isCancelled() %}
+          <div class="panel panel-danger">
+        {% elif not booking.isConfirmed() %}
+          <div class="panel panel-primary">
+        {% else %}
+          <div class="panel panel-info">
+        {% endif %}
+          <div class="panel-heading container-fluid" role="tab" id="heading_{{item.idstring}}_{{booking.booking_id}}">
+            <div class="row">
+              <a class="text-muted"
+                 data-toggle="collapse" data-parent="#booking_view" href="#{{item.idstring}}_{{booking.booking_id}}"
+                 aria-expanded="false" aria-controls="{{item.idstring}}_{{booking.booking_id}}">
+                <div class="col-sm-1 col-xs-1">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true">
+                </div>
+              </a>
+              <div class="col-sm-9 col-xs-9">                
+                <h3 class="panel-title">Booking [
+                  <a href="/equipment/labs/{{item.laboratory}}">{{laboratory_mapping[item.laboratory]}}</a> | 
+                  <a href="/equipment/types/{{item.equipment_type}}">{{type_mapping[item.equipment_type]}}</a> |
+                  <a href="/equipment/item/{{item.idstring}}">{{item.name}}</a> | {{booking.booking_id}}]</h3></span>
+              </div>
+              <div class="col-sm-1 col-xs-1">
+               {% if booking.isActive() %}
+                 Active
+               {% elif booking.isPast() %}
+                 Completed
+               {% elif booking.isCancelled() %}
+                 Cancelled
+               {% elif not booking.isConfirmed() %}
+                 <a href="/equipment/item/{{item.idstring}}/confirm?reservation={{booking.booking_id}}"
+                    class="bg-danger">
+                   CONFIRM?
+                 </a>
+               {% else %}
+                 Upcoming
+               {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div id="{{item.idstring}}_{{booking.booking_id}}" class="panel-collapse collapse in" role="tabpanel" 
+               aria-labelledby="heading_{{item.idstring}}_{{booking.booking_id}}">
+            <div class="panel-body container-fluid">
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>Start Time</strong></div>
+                <div class="col-sm-10 col-xs-10"><datetime>{{booking.start_time}}</datetime></div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>End Time</strong></div>
+                <div class="col-sm-10 col-xs-10"><datetime>{{booking.end_time}}</datetime></div>
+              </div>
+
+              {% for item in booking.information | dictsort %}
+                <div class="row">
+                  <div class="col-sm-2 col-xs-2"><strong class="text-capitalize">{{item[0]}}</strong></div>
+                  <div class="col-sm-10 col-xs-10">{{item[1]}}</div>
+                </div>
+              {% endfor %}
+
+              <div class="row">
+                <div class="col-sm-2 col-xs-2"><strong>Status</strong></div>
+                {% if booking.isCancelled() %}
+                  <div class="col-sm-2 col-xs-2 bg-danger">Cancelled</div>
+                {% elif booking.isReserved() %}
+                  <div class="col-sm-2 col-xs-2 bg-warning">
+                     <a href="/equipment/item/{{item.idstring}}/confirm?reservation={{booking.idstring}}">
+                       Needs confirming
+                     </a>
+                  </div>
+                {% elif booking.isPast() %}
+                  <div class="col-sm-2 col-xs-2 bg-warning">Completed</div>
+                {% else %}
+                  {% if booking.isActive() %}
+                    <div class="col-sm-2 col-xs-2 bg-success">Active</div>
+                  {% else %}
+                    <div class="col-sm-2 col-xs-2 bg-info">Upcoming</div>
+                  {% endif %}
+                {% endif %}
+              </div> <!-- row -->
+
+            </div> <!-- panel body -->
+          </div> <!-- panel-collapse -->
+        </div> <!-- panel -->
+      </booking> 
+    </div> <!-- panel-group -->
+
+  {% endif %}
+
+  {{ controls.drawBackForwardButton() }}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

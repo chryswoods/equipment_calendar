@@ -1,0 +1,71 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr class="info">
+        <th>Project</th>
+        <th>Project</th>
+        <th>VAT exempt</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for project in projects %}
+        <tr onclick="window.document.location='/admin/projects/view/{{project.id}}';">
+          <td>
+            {{ project.title }}
+          </td>
+          <td>
+            {% if project.bsb_project %}
+              <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+            {% endif %}
+          </td>
+          <td>
+            {% if project.vat_exempt %}
+              <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+            {% endif %}
+          </td>
+          <td>
+            {% if really_delete == project.id %}
+              <a href="/admin/projects/really_delete/{{project.id}}">
+                <button type="button" class="btn btn-danger">DELETE</button>
+              </a>
+            {% else %}
+              <a href="/admin/projects/delete/{{project.id}}">
+                <button type="button" class="btn btn-warning">Delete</button>
+              </a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      <form class="form-group" action="/admin/projects/create" method="post">
+        <tr>
+          <td>
+            <input type="text" class="form-control" id="project_title" 
+                   name="project_title" placeholder="Enter project title"
+                   maxlength="60" required="true" size="40">
+            </input>
+          </td>
+          <td>
+            <div class="switch">
+              <input id="bsb_project" name="bsb_project" class="cmn-toggle cmn-toggle-round" type="checkbox"/>
+              <label for="bsb_project"></label>
+            </div>
+          </td>
+          <td>
+            <div class="switch">
+              <input id="vat_exempt" name="vat_exempt" class="cmn-toggle cmn-toggle-round" type="checkbox"/>
+              <label for="vat_exempt"></label>
+            </div>
+          </td>   
+          <td>
+            <button type="submit" class="btn btn-default">Add</button>          
+          </td>   
+        </tr>
+        </form>
+      </tbody>
+      </table>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

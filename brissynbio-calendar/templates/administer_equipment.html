@@ -1,0 +1,404 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  {% if item %}
+
+    {% if show_admin %}
+      <div class="panel panel-default" > 
+        <div class="panel-heading container-fluid">
+          <a href="{{hide_admin_url}}">
+            <div class="panel-title row">
+              <div class="col-md-1 col-sm-1 col-xs-1">
+                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+              </div>
+              <div class="col-sm-10 col-xs-10">                
+                {{laboratory_mapping[item.laboratory]}} 
+                   | {{type_mapping[item.equipment_type]}} | 
+                     {{item.name}}
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="panel-body container-fluid">
+          <div class="row">
+            <div class="col-sm-10 col-xs-10">
+              <a href="/feedback/report_problem?equipment={{item.idstring}}">Click here to 
+                  report any problems, breakages or outages.</a>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-10 col-xs-10">
+              <a href="/equipment/item/{{item.idstring}}/admin_reqs">Click here to 
+                  customise the booking page.</a>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-10 col-xs-10">
+              <a href="/equipment/item/{{item.idstring}}/admin_cons">Click here to
+                  provide booking time constraints.</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="panel panel-default" > 
+        <div class="panel-heading container-fluid">
+          <a href="{{show_admin_url}}">
+            <div class="panel-title row">
+              <div class="col-md-1 col-sm-1 col-xs-1">
+                <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+              </div>
+              <div class="col-sm-10 col-xs-10">                
+                {{laboratory_mapping[item.laboratory]}} 
+                   | {{type_mapping[item.equipment_type]}} | 
+                     {{item.name}}
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if show_actions %}
+      <div class="panel panel-default" > 
+        <div class="panel-heading container-fluid">
+          <a href="{{hide_actions_url}}">
+            <div class="panel-title row">
+               <div class="col-md-1 col-sm-1 col-xs-1">
+                 <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+               </div>
+               <div class="col-sm-10 col-xs-10">                
+                 Actions
+               </div>
+            </div>
+          </a>
+        </div>
+
+        {% set has_actions = False %}
+
+        <div class="panel-body container-fluid">
+          {% if not calendar.gcal_id %}
+            <div class="row">
+              <div class="col-xs-12">
+                Warning! The google calendar for this piece of equipment has not been connected. Please contact the
+                <a href="mailto:brissynbio-equipment@bristol.ac.uk">equipment website administrator</a> to ask them
+                to fix this problem.
+              </div>
+            </div>
+            {% set has_actions = True %}
+          {% endif %}
+
+          {% if pending_users %}
+            <div class="row">
+              <div class="col-xs-12">
+                <h4><u>You need to approve or deny applications for access from the following users...</u></h4>
+              </div>
+            </div>
+
+            {% for user in pending_users %}
+              <hr/>
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>User</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{controls.view_account(user[0],account_mapping)}}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Reason</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{user[1]}}</div>
+              </div>
+              <hr/>
+              <div class="row">
+                <div class="col-md-1 col-sm-1 col-xs-0"></div>
+                <div class="col-md-2 col-sm-3 col-xs-4">
+                  <form class="form-group" action="/equipment/item/{{item.idstring}}/admin/grant_access?{{view_options}}" method="post">
+                    <input type="hidden" id="pending_user" name="pending_user" value="{{user[0]}}"/>
+                    <button type="submit" class="btn btn-success">Authorise</button>
+                  </form>
+                </div>
+                <form class="form-group" action="/equipment/item/{{item.idstring}}/admin/ban_user?{{view_options}}" method="post">
+                  <div class="input-group col-md-8 col-sm-7 col-xs-6">
+                    <span class="input-group-btn">
+                      <button type="submit" class="btn btn-danger">Deny</button>
+                    </span>
+                    <input type="text" class="form-control" id="reason" required="true"
+                           name="reason" placeholder="Why?"></input>
+                    <input type="hidden" id="banned_user" name="banned_user" value="{{user[0]}}"/>
+                    <input class="bsb-hidden-submit" type="submit" tabindex="-1"/>
+                  </div>
+                </form>
+              </div>
+            {% endfor %}
+            {% set has_actions = True %}
+          {% endif %}
+
+          {% if pending_bookings %}
+            <div class="row">
+              <div class="col-xs-12">
+                <h4><u>You need to authorise some pending bookings...</u></h4>
+              </div>
+            </div>
+
+            {% for booking in pending_bookings %}
+              <hr/>
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>User</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{controls.view_account(booking.email,account_mapping)}}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Booking</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">
+                  <a href="/equipment/item/{{item.idstring}}/view_booking?reservation={{booking.booking_id}}&is_admin_view=true">
+                    From {{controls.view_datetime(booking.start_time)}} until 
+                         {{controls.view_datetime(booking.end_time)}}
+                  </a>
+                </div>
+              </div>
+              <hr/>
+              <div class="row">
+                <div class="col-md-1 col-sm-1 col-xs-0"></div>
+                <div class="col-md-2 col-sm-3 col-xs-4">
+                  <form class="form-group" action="/equipment/item/{{item.idstring}}/admin/allow_booking?{{view_options}}" method="post">
+                    <input type="hidden" id="booking_id" name="booking_id" value="{{booking.booking_id}}"/>
+                    <button type="submit" class="btn btn-success">Authorise</button>
+                  </form>
+                </div>
+                <form class="form-group" action="/equipment/item/{{item.idstring}}/admin/deny_booking?{{view_options}}" method="post">
+                  <div class="input-group col-md-8 col-sm-7 col-xs-6">
+                    <span class="input-group-btn">
+                      <button type="submit" class="btn btn-danger">Deny</button>
+                    </span>
+                    <input type="text" class="form-control" id="reason" required="true"
+                           name="reason" placeholder="Why?"></input>
+                    <input type="hidden" id="booking_id" name="booking_id" value="{{booking.booking_id}}"/>
+                    <input class="bsb-hidden-submit" type="submit" tabindex="-1"/>
+                  </div>
+                </form>
+              </div>
+            {% endfor %}
+            {% set has_actions = True %}
+          {% endif %}
+
+          {% if not has_actions %}
+            <div class="row">
+              <div class="col-xs-12">
+               Everything is ok. No actions need attention at this time.
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <div class="panel panel-default" > 
+        <div class="panel-heading container-fluid">
+          <a href="{{show_actions_url}}">
+            <div class="panel-title row">
+               <div class="col-md-1 col-sm-1 col-xs-1">
+                 <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+               </div>
+               <div class="col-sm-10 col-xs-10">                
+                 Actions
+               </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if show_bookings %}
+      <div class="panel panel-default" > 
+        <div class="panel-heading container-fluid">
+          <a href="{{hide_bookings_url}}">
+            <div class="panel-title row">
+               <div class="col-md-1 col-sm-1 col-xs-1">
+                 <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+               </div>
+               <div class="col-sm-10 col-xs-10">                
+                 Upcoming bookings
+               </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="panel-body container-fluid">
+          {% if todays_bookings %}
+            <div class="row">
+              <div class="col-xs-10"><h4><u>Today's bookings</u></h4></div>
+            </div>
+            {% for booking in todays_bookings %}
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>User</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{controls.view_account(booking.email,account_mapping)}}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Booking</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">
+                  <a href="/equipment/item/{{item.idstring}}/view_booking?reservation={{booking.booking_id}}&is_admin_view=true">
+                    From {{controls.view_datetime(booking.start_time)}} until 
+                         {{controls.view_datetime(booking.end_time)}}
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          {% if future_bookings %}
+            <div class="row">
+              <div class="col-xs-10"><h4><u>Future bookings</u></h4></div>
+            </div>
+            {% for booking in future_bookings %}
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>User</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{controls.view_account(booking.email,account_mapping)}}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>Booking</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">
+                  <a href="/equipment/item/{{item.idstring}}/view_booking?reservation={{booking.booking_id}}&is_admin_view=true">
+                    From {{controls.view_datetime(booking.start_time)}} until 
+                         {{controls.view_datetime(booking.end_time)}}
+                  </a>
+                </div>
+              </div>
+              {% if not loop.last %}
+                <hr/>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+
+      </div>
+    {% else %}
+      <div class="panel panel-default" > 
+        <div class="panel-heading container-fluid">
+          <a href="{{show_bookings_url}}">
+            <div class="panel-title row">
+               <div class="col-md-1 col-sm-1 col-xs-1">
+                 <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+               </div>
+               <div class="col-sm-10 col-xs-10">                
+                 Upcoming bookings
+               </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if show_users %}
+      <div class="panel panel-default" > 
+        <div class="panel-heading container-fluid">
+          <a href="{{hide_users_url}}">
+            <div class="panel-title row">
+               <div class="col-md-1 col-sm-1 col-xs-1">
+                 <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+               </div>
+               <div class="col-sm-10 col-xs-10">                
+                 Users
+               </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="panel-body container-fluid">
+
+      {% if authorised_users %}
+        {% if authorised_users|length > 1 %}
+          <div class="row">
+            <div class="col-xs-10"><h4><u>Authorised users</u></h4></div>
+          </div>
+          {% for user in authorised_users %}
+            {% if user != email %}
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4">{{controls.view_account(user,account_mapping,True)}}</div>
+                {% if user in admin_users %}
+                  <div class="col-md-10 col-sm-9 col-xs-8">
+                    <form class="form-group" action="/equipment/item/{{item.idstring}}/admin/revoke_admin?{{view_options}}" method="post">
+                      <div class="input-group">
+                        <input type="text" class="form-control" id="reason" required="true"
+                               name="reason" placeholder="Provide a reason why you are revoking admin access..."></input>
+                        <input type="hidden" id="admin_user" name="admin_user" value="{{user}}"/>
+                        <input class="bsb-hidden-submit" type="submit" tabindex="-1"/>
+                        <span class="input-group-btn">
+                          <button type="submit" class="btn btn-warning">Revoke Admin</button>
+                        </span>
+                      </div>
+                    </form>
+                  </div>
+                {% else %}
+                  <div class="col-md-8 col-sm-6 col-xs-4">
+                    <form class="form-group" action="/equipment/item/{{item.idstring}}/admin/ban_user?{{view_options}}" method="post">
+                      <div class="input-group">
+                        <input type="text" class="form-control" id="reason" required="true"
+                               name="reason" placeholder="Provide a reason why this person is banned..."></input>
+                        <input type="hidden" id="banned_user" name="banned_user" value="{{user}}"/>
+                        <input class="bsb-hidden-submit" type="submit" tabindex="-1"/>
+                        <span class="input-group-btn">
+                          <button type="submit" class="btn btn-danger">Ban User</button>
+                        </span>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="col-md-2 col-sm-3 col-xs-4">
+                    <form class="form-group" action="/equipment/item/{{item.idstring}}/admin/grant_admin?{{view_options}}" method="post">
+                      <input type="hidden" id="admin_user" name="admin_user" value="{{user}}"/>
+                      <button type="submit" class="btn btn-success">Make Admin</button>
+                    </form>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+
+      {% if banned_users %}
+        <div class="row">
+          <div class="col-xs-10"><h4><u>Banned users</u></h4></div>
+        </div>
+        {% for user in banned_users %}
+          {% if user != email %}
+            <div class="row">
+              <div class="col-md-2 col-sm-3 col-xs-4">{{controls.view_account(user[0],account_mapping,True)}}</div>
+              <div class="col-md-7 col-sm-5 col-xs-4">
+                <form class="form-group" action="/equipment/item/{{item.idstring}}/admin/unban_user?{{view_options}}" method="post">
+                  <input type="hidden" id="unbanned_user" name="unbanned_user" value="{{user[0]}}"/>
+                  <div class="input-group">
+                    <label class="form-control">{{user[1]}}</label>
+                    <span class="input-group-btn">
+                      <button type="submit" class="btn btn-info">Unban</button>
+                    </span>
+                  </div>
+                </form>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      </div>
+
+    {% else %}
+      <div class="panel panel-default" > 
+        <div class="panel-heading container-fluid">
+          <a href="{{show_users_url}}">
+            <div class="panel-title row">
+               <div class="col-md-1 col-sm-1 col-xs-1">
+                 <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+               </div>
+               <div class="col-sm-10 col-xs-10">                
+                 Users
+               </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

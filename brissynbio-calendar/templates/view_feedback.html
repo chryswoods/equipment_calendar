@@ -1,0 +1,109 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  {% if feedback %}
+    {{ controls.view_feedback( [feedback], hide_resolved=False, can_delete=False,
+                                account=account, account_mapping=account_mapping,
+                                discussion_link=False, force_close=True, short_form=False ) }}
+
+    {% if feedback.hasMessages() %}
+      <div class="panel-group" role="tablist" aria-multiselectable="true" id="message_view">
+        <div class="panel panel-default" > 
+          <div class="panel-heading container-fluid" role="tab" id="feedback_messages">
+            <div class="panel-title row">
+              <a class="text-muted"
+                 data-toggle="collapse" aria-expanded="false" data-parent="#message_view" href="#collapse_messages"
+                 aria-controls="collapse_messages">
+                <div class="col-sm-1 col-xs-1">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </div>
+                <div class="col-sm-10 col-xs-10">                
+                  <h3 class="panel-title">
+                    Discussion
+                  </h3> 
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div id="collapse_messages" class="panel-collapse collapse in" role="tabpanel" 
+               aria-labelledby="feedback_messages">
+            <div class="panel-body">
+              {% for message in feedback.messages %}
+                <div class="row">
+                  <div class="col-md-2 col-sm-3 col-xs-4">
+                    {{ controls.view_account(message.email,account_mapping,name_only=True) }}<br/>
+                    <small><datetime>{{localise_time(message.message_time).strftime("%d %B %Y, %I:%M %p").replace(" 0"," ")}}</datetime></small>
+                  </div>
+                  <div class="col-md-10 col-sm-9 col-xs-8">
+                    <div class="well">{{message.message}}</div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if feedback.canBeResolvedBy(account) %}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form class="form-horizontal" action="/feedback/view/{{feedback.feedback_id}}" method="post">
+            <input type="hidden" id="resolved_user" name="resolved_user" value="{{account.email}}"/>
+            <div class="form-group">
+              <label for="resolved_info" class="col-md-2 col-sm-3 col-xs-4 control-label">Add comment</label>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% if resolved_info %}
+                  <textarea class="form-control" rows="2" name="resolved_info" id="resolved_info">{{resolved_info}}</textarea>
+                {% else %}
+                  <textarea class="form-control" rows="2" name="resolved_info" id="resolved_info"></textarea>
+                {% endif %}
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-md-offset-2 col-sm-offset-3 col-xs-offset-4 col-md-10 col-sm-9 col-xs-8 checkbox">
+                <label>
+                  <input type="checkbox" name="is_resolved" id="is_resolved"/> Mark as resolved
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-md-offset-2 col-sm-offset-3 col-xs-offset-4 col-md-10 col-sm-9 col-xs-8">
+                <button type="submit" class="btn btn-default">Submit</button>
+              </div>
+            </div>
+        </form>
+        </div>
+      </div>
+    {% elif not feedback.is_resolved %}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form class="form-horizontal" action="/feedback/view/{{feedback.feedback_id}}" method="post">
+            <input type="hidden" id="resolved_user" name="resolved_user" value="{{account.email}}"/>
+            <input type="hidden" id="resolve_type" name="resolve_type" value="add_information"/>
+            <div class="form-group">
+              <label for="resolved_info" class="col-md-2 col-sm-3 col-xs-4 control-label">Add comment</label>
+              <div class="col-md-10 col-sm-9 col-xs-8">
+                {% if resolved_info %}
+                  <textarea class="form-control" rows="6" name="resolved_info" id="resolved_info">{{resolved_info}}</textarea>
+                {% else %}
+                  <textarea class="form-control" rows="6" name="resolved_info" id="resolved_info"></textarea>
+                {% endif %}
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-md-offset-2 col-sm-offset-3 col-xs-offset-4 col-md-10 col-sm-9 col-xs-8">
+                <button type="submit" class="btn btn-default">Add more information about this problem</button>
+              </div>
+            </div>
+        </form>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

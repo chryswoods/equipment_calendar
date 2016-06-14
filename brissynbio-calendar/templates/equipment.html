@@ -1,0 +1,56 @@
+{% include '/templates/header.html' %}
+{% autoescape true %}
+
+  {% if equipment %}
+
+    {% if "authorised" in equipment %}
+      <h3>Equipment that you can use</h3>
+      <ul>
+      {% for item in equipment["authorised"] %}
+        <li><a href="/equipment/item/{{item}}">{{equipment_mapping[item]}}</a></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if "pending" in equipment %}
+      <h3>Equipment for which you have requested access...</h3>
+      <ul>
+      {% for item in equipment["pending"] %}
+        <li><a href="/equipment/item/{{item}}">{{equipment_mapping[item]}}</a></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if "administered" in equipment %}
+      <h3>Equipment that you can administer</h3>
+      <ul>
+      {% for item in equipment["administered"] %}
+        <li><a href="/equipment/item/{{item}}/admin">{{equipment_mapping[item]}}</a></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if "banned" in equipment %}
+      <h3>Equipment for which you have been denied access</h3>
+      <ul>
+      {% for item in equipment["banned"] %}
+        <li><a href="/equipment/item/{{item}}">{{equipment_mapping[item]}}</a></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+
+  {% else %}
+    <h3>Welcome to the BrisSynBio equipment management site.</h3> 
+    <p>To get started, look for equipment you want to use by browsing 
+       the set of <a href="/equipment/labs">laboratories</a> or
+       <a href="/equipment/types">equipment types</a>.</p>
+    <p>Once you find some equipment that you want to use, use the link on
+       the equipment page to request access.</p>
+    <p>The owner of that piece of equipment will consider your request.
+       This may involve inviting you to participate in some training.</p>
+    <p>If they grant you access, you will be able to use this site
+       to make and <a href="/equipment/bookings">manage your bookings</a>.</p>
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

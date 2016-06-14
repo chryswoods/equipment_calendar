@@ -1,0 +1,165 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+{% autoescape false %}
+
+  {% if booking %}
+    {% if booking.isActive() %}
+      <div class="panel panel-success">
+    {% elif booking.isPast() %}
+      <div class="panel panel-warning">
+    {% elif booking.isCancelled() %}
+      <div class="panel panel-danger">
+    {% elif not booking.isConfirmed() %}
+      <div class="panel panel-primary">
+    {% else %}
+      <div class="panel panel-info">
+    {% endif %}
+        <div class="panel-heading container-fluid">
+          <div class="panel-title row">
+            <div class="col-md-9 col-sm-8 col-xs-7">                
+              <h3 class="panel-title">
+                <a href="/equipment/item/{{booking.getEquipmentID()}}/view_booking?reservation={{booking.booking_id}}">
+                    {{controls.view_datetime(booking.start_time)}}</a> [
+                <a href="/equipment/labs/{{booking.getLaboratoryID()}}">{{booking.getLaboratoryName()}}</a> | 
+                <a href="/equipment/types/{{booking.getTypeID()}}">{{booking.getTypeName()}}</a> |
+                {% if is_admin_view %}
+                  <a href="/equipment/item/{{booking.getEquipmentID()}}/admin">{{booking.getEquipmentName()}}</a> ]
+                {% else %}
+                  <a href="/equipment/item/{{booking.getEquipmentID()}}">{{booking.getEquipmentName()}}</a> ]
+                {% endif %}
+              </h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-body container-fluid">
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>User</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">{{controls.view_account(booking.email,account_mapping)}}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Start Time</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">{{controls.view_datetime(booking.start_time)}}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>End Time</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">{{controls.view_datetime(booking.end_time)}}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Project</strong></div>
+            <div class="col-md-10 col-sm-9 col-xs-8">{{booking.getProjectName()}}</div>
+          </div>
+
+          {% if user_values %}
+            <hr/>
+            {% for value in user_values.requirements %}
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"><strong>{{value.reqname}}</strong></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">{{value.reqvalue}}</div>
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <hr/>
+          <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-4"><strong>Status</strong></div>
+            {% if booking.isCancelled() %}
+              <div class="col-md-10 col-sm-9 col-xs-8">Cancelled</div>
+            {% elif booking.isPendingAuthorisation() %}
+              <div class="col-md-10 col-sm-9 col-xs-8">Awaiting authorisation...</div>
+            {% elif booking.isDeniedAuthorisation() %}
+              {% if booking.information["denied_reason"] %}
+                <div class="col-md-10 col-sm-9 col-xs-8">Denied booking because - "{{booking.information["denied_reason"]}}"</div>
+              {% else %}
+                <div class="col-md-10 col-sm-9 col-xs-8">Denied booking - no reason given</div>
+              {% endif %}
+            {% elif booking.isPast() %}
+              {% if booking.isReserved() %}
+                <div class="col-md-10 col-sm-9 col-xs-8">Never confirmed</div>
+              {% else %}
+                <div class="col-md-10 col-sm-9 col-xs-8">Completed</div>
+              {% endif %}
+            {% elif booking.isReserved() %}
+              <div class="col-md-8 col-sm-7 col-xs-6">
+                <a href="/equipment/item/{{booking.equipment}}/book?booking_action=resume_booking&reservation={{booking.booking_id}}">
+                   Needs confirming
+                 </a>
+              </div>
+            {% else %}
+              {% if booking.isActive() %}
+                <div class="col-md-8 col-sm-7 col-xs-6">Active</div>
+              {% else %}
+                <div class="col-md-8 col-sm-7 col-xs-6">Upcoming and authorised</div>
+              {% endif %}
+            {% endif %}
+          </div>
+
+          {% if booking.isCurrentOrFuture() %}
+            {% if acl.isAdministrator() or acl.isAdmin() %}
+              {% if booking.isPendingAuthorisation() %}
+                <hr/>
+                <div class="row">
+                  <div class="col-md-1 col-sm-1 col-xs-0"></div>
+                  <div class="col-md-2 col-sm-3 col-xs-4">
+                    <form class="form-group" action="/equipment/item/{{booking.equipment}}/admin/allow_booking" method="post">
+                      <input type="hidden" id="booking_id" name="booking_id" value="{{booking.booking_id}}"/>
+                      <button type="submit" class="btn btn-success">Authorise</button>
+                    </form>
+                  </div>
+                  <form class="form-group" action="/equipment/item/{{booking.equipment}}/admin/deny_booking" method="post">
+                    <div class="input-group col-md-8 col-sm-7 col-xs-6">
+                      <span class="input-group-btn">
+                        <button type="submit" class="btn btn-danger">Deny</button>
+                      </span>
+                      <input type="text" class="form-control" id="reason" required="true"
+                             name="reason" placeholder="Why?"></input>
+                      <input type="hidden" id="booking_id" name="booking_id" value="{{booking.booking_id}}"/>
+                      <input class="bsb-hidden-submit" type="submit" tabindex="-1"/>
+                    </div>
+                  </form>
+                </div>
+              {% elif booking.isConfirmed() %}
+                <hr/>
+                <div class="row">
+                  <div class="col-md-1 col-sm-1 col-xs-1"></div>
+                  <form class="form-group" action="/equipment/item/{{booking.equipment}}/admin/cancel_booking" method="post">
+                    <div class="input-group col-md-10 col-sm-10 col-xs-10">
+                      <span class="input-group-btn">
+                        <button type="submit" class="btn btn-danger">Cancel Booking</button>
+                      </span>
+                      <input type="text" class="form-control" id="reason" required="true"
+                             name="reason" placeholder="Why?"></input>
+                      <input type="hidden" id="booking_id" name="booking_id" value="{{booking.booking_id}}"/>
+                      <input class="bsb-hidden-submit" type="submit" tabindex="-1"/>
+                    </div>
+                  </form>
+                </div>
+              {% endif %}
+            {% elif booking.isOwner(account) and (booking.isReserved() or booking.isPendingAuthorisation() or booking.isConfirmed()) %}
+              <hr/>
+              <div class="row">
+                <div class="col-md-2 col-sm-3 col-xs-4"></div>
+                <div class="col-md-10 col-sm-9 col-xs-8">
+                  {% if really_cancel %}
+                    <a href="/equipment/bookings/cancel?equipment={{booking.equipment}}&reservation={{booking.booking_id}}">
+                      <button type="button" class="btn btn-danger">Cancel Booking!</button>
+                    </a>
+                  {% else %}
+                    <a href="/equipment/item/{{booking.equipment}}/view_booking?reservation={{booking.booking_id}}&really_cancel=1">
+                      <button type="button" class="btn btn-warning">Cancel Booking?</button>
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+
+        </div> <!-- panel body -->
+      </div>
+  {% endif %}
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}

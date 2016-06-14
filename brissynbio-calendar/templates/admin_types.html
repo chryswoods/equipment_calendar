@@ -1,0 +1,47 @@
+{% include '/templates/header.html' %}
+{% import '/templates/controls.html' as controls %}
+
+{% autoescape false %}
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr class="info">
+        <th>Equipment Type</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for type in types %}
+         <tr onclick="window.document.location='/admin/equipment/types/{{type.idstring}}';">
+           <td>{{type.name}}</td>
+          <td>
+            {% if really_delete == type.idstring %}
+              <a href="/admin/equipment/types/{{type.idstring}}/really_delete">
+                <button type="button" class="btn btn-danger">DELETE</button>
+              </a>
+            {% else %}
+              <a href="/admin/equipment/types/{{type.idstring}}/delete">
+                <button type="button" class="btn btn-warning">Delete</button>
+              </a>
+            {% endif %}
+          </td>   
+         </tr>
+      {% endfor %}
+      <form class="form-group" action="/admin/equipment/types" method="post">
+        <tr>
+          <td>
+            <input type="text" class="form-control" id="type_name" 
+                   name="type_name" placeholder="Enter a name for this type of equipment..."
+                   required="true" size="40">
+            </input>
+          </td>
+          <td>
+            <button type="submit" class="btn btn-default">Add</button>          
+          </td>   
+        </tr>
+      </form>
+    </tbody>
+  </table>
+
+{% endautoescape %}
+{% include '/templates/footer.html' %}
