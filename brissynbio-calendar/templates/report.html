@@ -3,7 +3,7 @@
 
 {% autoescape false %}
 
-  <form class="form-inline" action="/admin/reports" method="get">
+  <form class="form-inline" action="/report" method="get">
     <div class="form-group">
       <label for="range_start">View between</label>
       <input type="text" value='{{range_start.strftime("%d %B %Y")}}' readonly class="picker_range_start form-control">
@@ -158,7 +158,7 @@
 
   <div class="row container-fluid">
     <div class="col-sm-2 col-xs-2">
-      <form action="/admin/reports" method="get">
+      <form action="/report" method="get">
         <input type="hidden" id="range_start" name="range_start" value="{{older_range_start.strftime('%d-%m-%Y')}}" />
         <input type="hidden" id="range_end" name="range_end" value="{{older_range_end.strftime('%d-%m-%Y')}}" />
         <button class="btn btn-default" type="submit">
@@ -167,7 +167,7 @@
       </form>
     </div>
     <div class="col-sm-2 col-xs-2">
-      <form action="/admin/reports" method="get">
+      <form action="/report" method="get">
         <input type="hidden" id="range_start" name="range_start" value="{{newer_range_start.strftime('%d-%m-%Y')}}" />
         <input type="hidden" id="range_end" name="range_end" value="{{newer_range_end.strftime('%d-%m-%Y')}}" />
         <button class="btn btn-default" type="submit">
