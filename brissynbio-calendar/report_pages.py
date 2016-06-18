@@ -57,20 +57,26 @@ class ReportPage(base_pages.BaseGetPage):
         proj_stats = {}
         user_stats = {}
 
+        total_time = 0
+
         for booking in bookings:
             run_time = (booking.end_time - booking.start_time).total_seconds() / 60.0
+            total_time += run_time
             equip = booking.equipment
             proj = booking.project
             email = booking.email
 
             if not equip in equip_stats:
                 equip_stats[equip] = {}
+                equip_stats[equip]["_total"] = 0
 
             if not proj in proj_stats:
                 proj_stats[proj] = {}
+                proj_stats[proj]["_total"] = 0
 
             if not email in user_stats:
                 user_stats[email] = {}
+                user_stats[email]["_total"] = 0
 
             if not proj in equip_stats[equip]:
                 equip_stats[equip][proj] = 0.0
@@ -90,10 +96,13 @@ class ReportPage(base_pages.BaseGetPage):
             if not email in proj_stats[proj]:
                 proj_stats[proj][email] = 0.0
 
+            equip_stats[equip]["_total"] += run_time
             equip_stats[equip][proj] += run_time
             equip_stats[equip][email] += run_time
+            proj_stats[proj]["_total"] += run_time
             proj_stats[proj][equip] += run_time
             proj_stats[proj][email] += run_time
+            user_stats[email]["_total"] += run_time
             user_stats[email][proj] += run_time
             user_stats[email][equip] += run_time
 
@@ -104,13 +113,18 @@ class ReportPage(base_pages.BaseGetPage):
         emails = list(user_stats.keys())
         emails.sort()
 
+        state.setTemplate("equips_dict", bsb.equipment.get_equipment_dict())
+        state.setTemplate("projects_dict", bsb.projects.get_project_mapping())
+        state.setTemplate("emails_dict", bsb.accounts.get_account_mapping())
+
         state.setTemplate("nbookings", len(bookings))
+        state.setTemplate("total_time", total_time)
 
         state.setTemplate("equips", equips)
         state.setTemplate("projs", projs)
         state.setTemplate("emails", emails)
         state.setTemplate("equip_stats", equip_stats)
         state.setTemplate("proj_stats", proj_stats)
-        state.setTemplate("user_stats", user_stats)
+        state.setTemplate("email_stats", user_stats)
 
-        self.write(state, "report.html", "Test message")
+        self.write(state, "report.html", "Booking Reports")

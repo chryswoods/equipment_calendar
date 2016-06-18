@@ -2937,6 +2937,14 @@ def list_equipment(sorted=True, equipment_registry=DEFAULT_EQUIPMENT_REGISTRY):
     """Return a list of all pieces of equipment"""
     return _db.list_items(Equipment, EquipmentInfo, equipment_registry, sorted)
 
+def get_equipment_dict(equipment_registry=DEFAULT_EQUIPMENT_REGISTRY):
+    """Return a dictionary of all equipment indexed by ID"""
+    d = {}
+    equips = list_equipment(False, equipment_registry)
+    for equip in equips:
+        d[equip.idstring] = equip
+    return d
+
 def list_equipment_by_type(sorted=True, equipment_registry=DEFAULT_EQUIPMENT_REGISTRY):
     """Return a dictionary of all pieces of equipment, keyyed by equipment type"""
     items = list_equipment(sorted, equipment_registry)

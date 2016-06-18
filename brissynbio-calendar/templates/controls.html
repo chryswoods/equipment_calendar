@@ -231,6 +231,16 @@
   {% endif %}
 {%- endmacro %}
 
+{% macro view_project(project, project_mapping) -%}
+  {% if project %}
+    <a href="/admin/projects/view/{{project}}">{{project_mapping[project]}}</a>
+  {% endif %}
+{%- endmacro %}
+
+{% macro view_usage(minutes, total) -%}
+  {{"%.0f" % minutes}} minutes | {{"%.1f" % (minutes/60)}} hours | {{"%.0f" % (100*minutes/total)}} %
+{%- endmacro %}
+
 {% macro view_equipment(item) -%}
   {% if item %}
     <a href="/equipment/labs/{{item.getLaboratoryID()}}">{{item.getLaboratoryName()}}</a> |

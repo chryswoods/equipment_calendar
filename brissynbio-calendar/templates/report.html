@@ -25,22 +25,99 @@
 
   <div>
     <h3>Number of bookings in this date range = {{nbookings}}</h3>
-    <p>{{message}}</p>
+    <h3>Total amount of time booked = {{total_time}} minutes ({{total_time/60}} hours)</h3>
   </div>
 
-  <div>
-    <h3>Statistics for equipment</h3>
-    <p>{{equip_stats}}
-  </div>
-
-  <div>
-    <h3>Statistics for projects</h3>
-    <p>{{proj_stats}}
-  </div>
-
-  <div>
-    <h3>Statistics for users</h3>
-    <p>{{user_stats}}
+  <div style="width=80%">
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="#equipment" aria-controls="equipment" role="tab" data-toggle="tab">View Equipment</a></li>
+      <li role="presentation"><a href="#project" aria-controls="project" role="tab" data-toggle="tab">View Projects</a></li>
+      <li role="presentation"><a href="#user" aria-controls="user" role="tab" data-toggle="tab">View Users</a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="equipment">
+        {% for equip in equips %}
+          <hr/>
+          <h4>{{controls.view_equipment(equips_dict[equip])}}</h4>
+          <h4>Total time booked = {{controls.view_usage(equip_stats[equip]["_total"],total_time)}}</h4>
+          <div class="row container_fluid"><div class="col-sm-12">Projects</div></div>   
+          {% for proj in projs %}
+            {% if proj in equip_stats[equip] %}
+              <div class="row_container_fluid">
+                <div class="col-sm-4">{{controls.view_project(proj,projects_dict)}}</div>
+                <div class="col-sm-8">{{controls.view_usage(equip_stats[equip][proj], equip_stats[equip]["_total"])}}</div>
+              </div>
+            {% endif %}
+          {% endfor %}
+          <hr/>
+          <div class="row container_fluid"><div class="col-sm-12">Users</div></div>   
+          {% for email in emails %}
+            {% if email in equip_stats[equip] %}
+              <div class="row_container_fluid">
+                <div class="col-sm-4">{{controls.view_account(email,emails_dict)}}</div>
+                <div class="col-sm-8">{{controls.view_usage(equip_stats[equip][email], equip_stats[equip]["_total"])}}</div>
+              </div>
+            {% endif %}
+          {% endfor %}
+          <hr/>
+        {% endfor %}
+      </div>
+      <div role="tabpanel" class="tab-pane" id="project">
+        {% for proj in projs %}
+          <hr/>
+          <h4>{{controls.view_project(proj,projects_dict)}}</h4>
+          <h4>Total time booked = {{controls.view_usage(proj_stats[proj]["_total"],total_time)}}</h4>
+          <div class="row container_fluid"><div class="col-sm-12">Equipment</div></div>   
+          {% for equip in equips %}
+            {% if equip in proj_stats[proj] %}
+              <div class="row_container_fluid">
+                <div class="col-sm-4">{{controls.view_equipment(equips_dict[equip])}}</div>
+                <div class="col-sm-8">{{controls.view_usage(proj_stats[proj][equip], proj_stats[proj]["_total"])}}</div>
+              </div>
+            {% endif %}
+          {% endfor %}
+          <hr/>
+          <div class="row container_fluid"><div class="col-sm-12">Users</div></div>   
+          {% for email in emails %}
+            {% if email in proj_stats[proj] %}
+              <div class="row_container_fluid">
+                <div class="col-sm-4">{{controls.view_account(email,emails_dict)}}</div>
+                <div class="col-sm-8">{{controls.view_usage(proj_stats[proj][email], proj_stats[proj]["_total"])}}</div>
+              </div>
+            {% endif %}
+          {% endfor %}
+          <hr/>
+        {% endfor %}
+      </div>
+      <div role="tabpanel" class="tab-pane" id="user">
+        {% for email in emails %}
+          <hr/>
+          <h4>{{controls.view_account(email,emails_dict)}}</h4>
+          <h4>Total time booked = {{controls.view_usage(email_stats[email]["_total"],total_time)}}</h4>
+          <div class="row container_fluid"><div class="col-sm-12">Equipment</div></div>   
+          {% for equip in equips %}
+            {% if equip in email_stats[email] %}
+              <div class="row_container_fluid">
+                <div class="col-sm-4">{{controls.view_equipment(equips_dict[equip])}}</div>
+                <div class="col-sm-8">{{controls.view_usage(email_stats[email][equip], email_stats[email]["_total"])}}</div>
+              </div>
+            {% endif %}
+          {% endfor %}
+          <hr/>
+          <div class="row container_fluid"><div class="col-sm-12">Projects</div></div>   
+          {% for proj in projs %}
+            {% if proj in email_stats[email] %}
+              <div class="row_container_fluid">
+                <div class="col-sm-4">{{controls.view_project(proj,projects_dict)}}</div>
+                <div class="col-sm-8">{{controls.view_usage(email_stats[email][proj], email_stats[email]["_total"])}}</div>
+              </div>
+            {% endif %}
+          {% endfor %}
+          <hr/>
+        {% endfor %}
+      </div>
+    </div>
   </div>
 
   <hr/>
