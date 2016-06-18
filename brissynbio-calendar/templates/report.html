@@ -23,12 +23,36 @@
     <input type="hidden" id="range_end" name="range_end" value="{{range_end.strftime('%d-%m-%Y')}}" readonly /> 
   </form>
 
-  <div>
-    <h3>Number of bookings in this date range = {{nbookings}}</h3>
-    <h3>Total amount of time booked = {{"%.0f" % total_time}} minutes ({{"%.1f" % (total_time/60)}} hours)</h3>
+  <hr/>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Overall Summary</div>
+    <div class="panel-body">
+      <div class="row container_fluid">
+        <div class="col-sm-4">Number of bookings</div>
+        <div class="col-sm-8">{{nbookings}}</div>
+      </div>
+      <div class="row container_fluid">
+        <div class="col-sm-4">Number of users</div>
+        <div class="col-sm-8">{{nemails}}</div>
+      </div>
+      <div class="row container_fluid">
+        <div class="col-sm-4">Number of projects</div>
+        <div class="col-sm-8">{{nprojs}}</div>
+      </div>
+      <div class="row container_fluid">
+        <div class="col-sm-4">Number of pieces of equipment</div>
+        <div class="col-sm-8">{{nequips}}</div>
+      </div>
+      <div class="row container_fluid">
+        <div class="col-sm-4">Total time booked</div>
+        <div class="col-sm-8">{{"%.0f" % total_time}} minutes | {{"%.1f" % (total_time/60)}} hours</div>
+      </div>
+    </div>
   </div>
 
-  <div style="width=80%">
+  {% if nequips > 0 %}
+  <div>
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#equipment" aria-controls="equipment" role="tab" data-toggle="tab">View Equipment</a></li>
       <li role="presentation"><a href="#project" aria-controls="project" role="tab" data-toggle="tab">View Projects</a></li>
@@ -130,6 +154,7 @@
   </div>
 
   <hr/>
+  {% endif %}
 
   <div class="row container-fluid">
     <div class="col-sm-2 col-xs-2">

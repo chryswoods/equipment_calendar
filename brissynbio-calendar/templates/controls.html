@@ -234,6 +234,8 @@
 {% macro view_project(project, project_mapping) -%}
   {% if project %}
     <a href="/admin/projects/view/{{project}}">{{project_mapping[project]}}</a>
+  {% else %}
+    {{project}}
   {% endif %}
 {%- endmacro %}
 

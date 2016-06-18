@@ -58,13 +58,21 @@ class ReportPage(base_pages.BaseGetPage):
         user_stats = {}
 
         total_time = 0
+        nbookings = 0
 
         for booking in bookings:
+            if not booking.isConfirmed():
+                continue
+
             run_time = (booking.end_time - booking.start_time).total_seconds() / 60.0
             total_time += run_time
             equip = booking.equipment
             proj = booking.project
             email = booking.email
+            nbookings += 1
+
+            if proj is None:
+                state.addError( "No project for booking %s %s" % (equip,email) )
 
             if not equip in equip_stats:
                 equip_stats[equip] = {}
@@ -117,7 +125,10 @@ class ReportPage(base_pages.BaseGetPage):
         state.setTemplate("projects_dict", bsb.projects.get_project_mapping())
         state.setTemplate("emails_dict", bsb.accounts.get_account_mapping())
 
-        state.setTemplate("nbookings", len(bookings))
+        state.setTemplate("nbookings", nbookings)
+        state.setTemplate("nemails", len(emails))
+        state.setTemplate("nprojs", len(projs))
+        state.setTemplate("nequips", len(equips))
         state.setTemplate("total_time", total_time)
 
         state.setTemplate("equips", equips)
