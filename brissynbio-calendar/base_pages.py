@@ -82,6 +82,7 @@ left_menu_items = [ MenuItem("home", "/equipment/summary"),
                                       MenuItem("by laboratory", "/equipment/labs"),
                                       MenuItem("by type", "/equipment/types"),
                                        ]),
+                    MenuItem("reports", "/report"),
                     MenuItem("forum", "/forum") ]
 
 admin_menu_item = MenuItem("admin", "/admin")

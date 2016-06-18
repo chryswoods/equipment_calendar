@@ -17,7 +17,7 @@ class ReportPage(base_pages.BaseGetPage):
     """Class that allows you to generate reports of usage"""
 
     def needsAdmin(self):
-        return True
+        return False
 
     def render_get(self, state):
         now_time = bsb.get_now_time()
