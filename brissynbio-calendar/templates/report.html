@@ -25,7 +25,7 @@
 
   <div>
     <h3>Number of bookings in this date range = {{nbookings}}</h3>
-    <h3>Total amount of time booked = {{total_time}} minutes ({{total_time/60}} hours)</h3>
+    <h3>Total amount of time booked = {{"%.0f" % total_time}} minutes ({{"%.1f" % (total_time/60)}} hours)</h3>
   </div>
 
   <div style="width=80%">
@@ -41,7 +41,7 @@
           <hr/>
           <h4>{{controls.view_equipment(equips_dict[equip])}}</h4>
           <h4>Total time booked = {{controls.view_usage(equip_stats[equip]["_total"],total_time)}}</h4>
-          <div class="row container_fluid"><div class="col-sm-12">Projects</div></div>   
+          <div class="row container_fluid"><div class="col-sm-12"><h4>Projects</h4></div></div>   
           {% for proj in projs %}
             {% if proj in equip_stats[equip] %}
               <div class="row_container_fluid">
@@ -50,8 +50,7 @@
               </div>
             {% endif %}
           {% endfor %}
-          <hr/>
-          <div class="row container_fluid"><div class="col-sm-12">Users</div></div>   
+          <div class="row container_fluid"><div class="col-sm-12"><h4>Users</h4></div></div>   
           {% for email in emails %}
             {% if email in equip_stats[equip] %}
               <div class="row_container_fluid">
@@ -60,7 +59,7 @@
               </div>
             {% endif %}
           {% endfor %}
-          <hr/>
+          <hr/><hr/>
         {% endfor %}
       </div>
       <div role="tabpanel" class="tab-pane" id="project">
@@ -68,7 +67,7 @@
           <hr/>
           <h4>{{controls.view_project(proj,projects_dict)}}</h4>
           <h4>Total time booked = {{controls.view_usage(proj_stats[proj]["_total"],total_time)}}</h4>
-          <div class="row container_fluid"><div class="col-sm-12">Equipment</div></div>   
+          <div class="row container_fluid"><div class="col-sm-12"><h4>Equipment</h4></div></div>   
           {% for equip in equips %}
             {% if equip in proj_stats[proj] %}
               <div class="row_container_fluid">
@@ -77,8 +76,7 @@
               </div>
             {% endif %}
           {% endfor %}
-          <hr/>
-          <div class="row container_fluid"><div class="col-sm-12">Users</div></div>   
+          <div class="row container_fluid"><div class="col-sm-12"><h4>Users</h4></div></div>   
           {% for email in emails %}
             {% if email in proj_stats[proj] %}
               <div class="row_container_fluid">
@@ -87,7 +85,7 @@
               </div>
             {% endif %}
           {% endfor %}
-          <hr/>
+          <hr/><hr/>
         {% endfor %}
       </div>
       <div role="tabpanel" class="tab-pane" id="user">
@@ -95,7 +93,7 @@
           <hr/>
           <h4>{{controls.view_account(email,emails_dict)}}</h4>
           <h4>Total time booked = {{controls.view_usage(email_stats[email]["_total"],total_time)}}</h4>
-          <div class="row container_fluid"><div class="col-sm-12">Equipment</div></div>   
+          <div class="row container_fluid"><div class="col-sm-12"><h4>Equipment</h4></div></div>   
           {% for equip in equips %}
             {% if equip in email_stats[email] %}
               <div class="row_container_fluid">
@@ -104,8 +102,7 @@
               </div>
             {% endif %}
           {% endfor %}
-          <hr/>
-          <div class="row container_fluid"><div class="col-sm-12">Projects</div></div>   
+          <div class="row container_fluid"><div class="col-sm-12"><h4>Projects</h4></div></div>   
           {% for proj in projs %}
             {% if proj in email_stats[email] %}
               <div class="row_container_fluid">
@@ -114,7 +111,7 @@
               </div>
             {% endif %}
           {% endfor %}
-          <hr/>
+          <hr/><hr/>
         {% endfor %}
       </div>
     </div>
