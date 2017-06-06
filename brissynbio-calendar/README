@@ -17,17 +17,3 @@ at the address
 
 http://starry-iris-830.appspot.com
 
-================
-
-To push / pull to google git you need to authenticate with gcloud, e.g.
-
-gcloud auth login
-
-(this will log you in via a browser)
-
-then ensure that you set the gcloud.sh as an authenticator for git, e.g.
-
-git config credential.helper gcloud.sh
-
-Then git pull and git push should work
-
